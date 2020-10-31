@@ -214,6 +214,9 @@ The timer peripherals can be classified as:
 
 For example, STM32F103C8T6 has one advance timer, while STM32F103VET6 has two advanced timers. Nucleo-144 STM32F767ZI boards have 14 Timers, TIM1-TIM14.
 
+<p align="center">
+    <img src="https://github.com/khoih-prog/STM32_TimerInterrupt/blob/master/pics/STM32Timers.png">
+</p>
 
 <p align="center">
     <img src="https://github.com/khoih-prog/STM32_TimerInterrupt/blob/master/pics/STM32Timers.png">
