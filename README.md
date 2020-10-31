@@ -212,18 +212,19 @@ The timer peripherals can be classified as:
 • Lite-configuration timers like TIM9, TIM10, TIM12 and TIM16 among others
 • Basic-configuration timers like TIM6 and TIM7 among others.
 
-For example, STM32F103C8T6 has one advance timer, while STM32F103VET6 has two advanced timers. Nucleo-144 STM32F767ZI boards have 14 Timers, TIM1-TIM14.
+For example, **STM32F103C8T6** has one advance timer, while **STM32F103VET6** has two advanced timers. **Nucleo-144 STM32F767ZI boards have 14 Timers, TIM1-TIM14**.
+
 
 <p align="center">
     <img src="https://github.com/khoih-prog/STM32_TimerInterrupt/blob/main/pics/STM32Timers.png">
 </p>
 
 
-More information can be found at [Embedded-Lab STM32 TIMERS](http://embedded-lab.com/blog/stm32-timers/)
+More information can be found at [**Embedded-Lab STM32 TIMERS**](http://embedded-lab.com/blog/stm32-timers/)
 
-To be sure which Timer is available for the board you're using, check the Core Package's related files. For example, for F767ZI, check these files:
-1. ~/.arduino15/packages/STM32/hardware/stm32/1.9.0/system/Drivers/CMSIS/Device/ST/STM32F7xx/Include/stm32f7xx.h
-2. ~/.arduino15/packages/STM32/hardware/stm32/1.9.0/system/Drivers/CMSIS/Device/ST/STM32F7xx/Include/stm32f767xx.h
+To be sure which Timer is available for the board you're using, check the Core Package's related files. For example, for **Nucleo-144 STM32F767ZI**, check these files:
+1. `~/.arduino15/packages/STM32/hardware/stm32/1.9.0/system/Drivers/CMSIS/Device/ST/STM32F7xx/Include/stm32f7xx.h`
+2. `~/.arduino15/packages/STM32/hardware/stm32/1.9.0/system/Drivers/CMSIS/Device/ST/STM32F7xx/Include/stm32f767xx.h`
 
 The information will be as follows:
 
@@ -736,7 +737,7 @@ void loop()
 
 ### Debug Terminal Output Samples
 
-1. The following is the sample terminal output when running example [ISR_Timer_Complex](examples/ISR_Timer_Complex) to demonstrate the accuracy of ISR Hardware Timer, **especially when system is very busy**.  The ISR timer is **programmed for 2s, is activated exactly after 2.000s !!!**
+1. The following is the sample terminal output when running example [ISR_Timer_Complex](examples/ISR_Timer_Complex) on **STM32F7 Nucleo-144 F767ZI using Built-in LAN8742A Ethernet and STM32Ethernet Library** to demonstrate the accuracy of ISR Hardware Timer, **especially when system is very busy**.  The ISR timer is **programmed for 2s, is activated exactly after 2.000s !!!**
 
 While software timer, **programmed for 2s, is activated after 9.782s !!!**. Then in loop(), it's also activated **every 3s**.
 
@@ -795,7 +796,7 @@ blynkDoingSomething2s: Delta programmed ms = 2000, actual = 3000
 
 ---
 
-2. The following is the sample terminal output when running example [TimerInterruptTest](examples/TimerInterruptTest) to demonstrate how to start/stop Hardware Timers.
+2. The following is the sample terminal output when running example [**TimerInterruptTest**](examples/TimerInterruptTest) on **STM32F7 Nucleo-144 F767ZI** to demonstrate how to start/stop Hardware Timers.
 
 ```
 
@@ -845,7 +846,9 @@ Start ITimer0, millis() = 140028
 
 ```
 
+---
 
+3. The following is the sample terminal output when running example [**Argument_None**](examples/Argument_None) on **STM32G7 Nucleo-144 F767ZI** to demonstrate how to start/stop Multiple Hardware Timers.
 
 ```
 Starting Argument_None on NUCLEO_F767ZI
@@ -918,7 +921,6 @@ ITimer0: millis() = 37106, delta = 1000
   - **Nucleo-144 (F429ZI, F767ZI)**
   - **Discovery (STM32F746G-DISCOVERY)**
   - **All STM32 boards (STM32F/L/H/G/WB/MP1) with 32K+ Flash, with Built-in Ethernet**
-  - See [EthernetWebServer_STM32 Support and Test Results](https://github.com/khoih-prog/EthernetWebServer_STM32/issues/1)
   
 2. **STM32F/L/H/G/WB/MP1 boards (with 32+K Flash) running W5x00 or ENC28J60 shields)**
 
