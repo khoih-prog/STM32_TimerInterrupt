@@ -216,7 +216,7 @@ For example, STM32F103C8T6 has one advance timer, while STM32F103VET6 has two ad
 
 
 <p align="center">
-    <img src="https://github.com/khoih-prog/STM32_TimerInterrupt/blob/master/pics/STM32-Timers.png">
+    <img src="https://github.com/khoih-prog/STM32_TimerInterrupt/blob/master/pics/STM32Timers.png">
 </p>
 
 
