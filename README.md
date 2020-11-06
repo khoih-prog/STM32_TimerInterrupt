@@ -11,13 +11,13 @@
 
 ## Features
 
-This library enables you to use Interrupt from Hardware Timers on an STM32-based board.
+This library enables you to use Interrupt from Hardware Timers on an STM32-based board, such as STM32F/L/H/G/WB/MP1. As **Hardware Timers are rare, and very precious assets** of any board, this library now enable you to use up to **16 ISR-based Timers, while consuming only 1 Hardware Timer**. Timers' interval is very long (**ulong millisecs**). 
 
 ### Why do we need this Hardware Timer Interrupt?
 
 Imagine you have a system with a **mission-critical** function, measuring water level and control the sump pump or doing something much more important. You normally use a software timer to poll, or even place the function in loop(). But what if another function is **blocking** the loop() or setup().
 
-So your function **might not be executed, and the result would be disastrous.**
+So your function **might not be executed on-time or not at all, and the result would be disastrous.**
 
 You'd prefer to have your function called, no matter what happening with other functions (busy loop, bug, etc.).
 
@@ -41,6 +41,10 @@ The catch is **your function is now part of an ISR (Interrupt Service Routine), 
 
 ---
 ---
+
+### Releases v1.0.1
+
+1. Add complicated example [ISR_16_Timers_Array](examples/ISR_16_Timers_Array) utilizing and demonstrating the full usage of 16 independent ISR Timers.
 
 ### Releases v1.0.0
 
@@ -385,7 +389,7 @@ void TimerHandler(void)
   ISR_Timer.run();
 }
 
-#define HW_TIMER_INTERVAL_MS          50L
+#define HW_TIMER_INTERVAL_US          100L
 
 #define TIMER_INTERVAL_2S             2000L
 #define TIMER_INTERVAL_5S             5000L
@@ -420,7 +424,7 @@ void setup()
   ....
   
   // Interval in microsecs
-  if (ITimer.attachInterruptInterval(HW_TIMER_INTERVAL_MS * 1000, TimerHandler))
+  if (ITimer.attachInterruptInterval(HW_TIMER_INTERVAL_US, TimerHandler))
   {
     lastMillis = millis();
     Serial.println("Starting  ITimer OK, millis() = " + String(lastMillis));
@@ -444,18 +448,19 @@ void setup()
 ### Examples: 
 
  1. [Argument_None](examples/Argument_None)
- 2. [ISR_RPM_Measure](examples/ISR_RPM_Measure)
- 3. [ISR_Timer_Complex](examples/ISR_Timer_Complex)
- 4. [RPM_Measure](examples/RPM_Measure)
- 5. [SwitchDebounce](examples/SwitchDebounce)
- 6. [TimerInterruptTest](examples/TimerInterruptTest)
- 7. [TimerInterruptLEDDemo](examples/TimerInterruptLEDDemo)
-
+ 2. [ISR_16_Timers_Array](examples/ISR_16_Timers_Array)
+ 3. [ISR_RPM_Measure](examples/ISR_RPM_Measure)
+ 4. [ISR_Timer_Complex](examples/ISR_Timer_Complex)
+ 5. [RPM_Measure](examples/RPM_Measure)
+ 6. [SwitchDebounce](examples/SwitchDebounce)
+ 7. [TimerInterruptTest](examples/TimerInterruptTest)
+ 8. [TimerInterruptLEDDemo](examples/TimerInterruptLEDDemo)
+ 
 
 ---
 ---
 
-### Example [ISR_Timer_Complex](examples/ISR_Timer_Complex)
+### Example [ISR_16_Timers_Array](examples/ISR_16_Timers_Array)
 
 ```
 #if !( defined(STM32F0) || defined(STM32F1) || defined(STM32F2) || defined(STM32F3)  ||defined(STM32F4) || defined(STM32F7) || \
@@ -464,67 +469,30 @@ void setup()
   #error This code is designed to run on STM32F/L/H/G/WB/MP1 platform! Please check your Tools->Board setting.
 #endif
 
-#define BLYNK_PRINT Serial
-
-//#define BLYNK_DEBUG
-#ifdef BLYNK_DEBUG
-  #undef BLYNK_DEBUG
-#endif
-
-/* Comment this out to disable prints and save space */
-#define BLYNK_PRINT Serial
-
-#define USE_BUILTIN_ETHERNET    true
-//  If don't use USE_BUILTIN_ETHERNET, and USE_UIP_ETHERNET => use W5x00 with Ethernet library
-#define USE_UIP_ETHERNET        false
-
-#if (USE_BUILTIN_ETHERNET)
-  #define ETHERNET_NAME     "Built-in LAN8742A Ethernet"
-#elif (USE_UIP_ETHERNET)
-  #define ETHERNET_NAME     "ENC28J60 Ethernet Shield"
-#else
-  #define ETHERNET_NAME     "W5x00 Ethernet Shield"
-#endif
-
-#define BLYNK_NO_YIELD
-
-#if USE_BUILTIN_ETHERNET
-  #include <BlynkSimple_STM32BI_Ethernet.h>
-#elif USE_UIP_ETHERNET
-  #include <BlynkSimpleUIPEthernet.h>
-#else
-  #include <BlynkSimpleEthernet.h>
-#endif
-
-#define USE_LOCAL_SERVER      true
-
-#if USE_LOCAL_SERVER
-  char auth[] = "******";
-  char server[] = "account.duckdns.org";
-  //char server[] = "192.168.2.112";
-
-#else
-  char auth[] = "******";
-  char server[] = "blynk-cloud.com";
-#endif
-  
-  #define BLYNK_HARDWARE_PORT       8080
-
-#if !(USE_BUILTIN_ETHERNET || USE_UIP_ETHERNET)
-  #define W5100_CS  10
-  #define SDCARD_CS 4
-#endif
-
 // These define's must be placed at the beginning before #include "STM32TimerInterrupt.h"
+// Don't define STM32_TIMER_INTERRUPT_DEBUG > 2. Only for special ISR debugging only. Can hang the system.
 #define STM32_TIMER_INTERRUPT_DEBUG      1
 
 #include "STM32TimerInterrupt.h"
 #include "STM32_ISR_Timer.h"
 
-#define TIMER_INTERVAL_MS         100
-#define HW_TIMER_INTERVAL_MS      50
+#include <SimpleTimer.h>              // https://github.com/schinken/SimpleTimer
 
-volatile uint32_t lastMillis = 0;
+#ifndef LED_BUILTIN
+  #define LED_BUILTIN       13
+#endif
+
+#ifndef LED_BLUE
+  #define LED_BLUE          2
+#endif
+
+#ifndef LED_RED
+  #define LED_RED           3
+#endif
+
+#define HW_TIMER_INTERVAL_US      100L
+
+volatile uint32_t startMillis = 0;
 
 // Depending on the board, you can select STM32 Hardware Timer from TIM1-TIM22
 // For example, F767ZI can select Timer from TIM1-TIM14
@@ -538,19 +506,7 @@ STM32Timer ITimer(TIM1);
 // Each STM32_ISR_Timer can service 16 different ISR-based timers
 STM32_ISR_Timer ISR_Timer;
 
-// Ibit Blynk Timer
-BlynkTimer blynkTimer;
-
-#ifndef LED_BUILTIN
-  #define LED_BUILTIN       PB0               // Pin 33/PB0 control on-board LED_GREEN on F767ZI
-#endif
-
-#define LED_TOGGLE_INTERVAL_MS        5000L
-
-#define TIMER_INTERVAL_2S             2000L
-#define TIMER_INTERVAL_5S             5000L
-#define TIMER_INTERVAL_11S            11000L
-#define TIMER_INTERVAL_101S           101000L
+#define LED_TOGGLE_INTERVAL_MS        2000L
 
 void TimerHandler(void)
 {
@@ -561,7 +517,7 @@ void TimerHandler(void)
   ISR_Timer.run();
 
   // Toggle LED every LED_TOGGLE_INTERVAL_MS = 5000ms = 5s
-  if (++timeRun == (LED_TOGGLE_INTERVAL_MS / HW_TIMER_INTERVAL_MS) )
+  if (++timeRun == ( (LED_TOGGLE_INTERVAL_MS * 1000 ) / HW_TIMER_INTERVAL_US) )
   {
     timeRun = 0;
 
@@ -577,92 +533,285 @@ void TimerHandler(void)
   }
 }
 
+#define NUMBER_ISR_TIMERS         16
+
+// You can assign any interval for any timer here, in milliseconds
+uint32_t TimerInterval[NUMBER_ISR_TIMERS] =
+{
+  1000L,  2000L,  3000L,  4000L,  5000L,  6000L,  7000L,  8000L,
+  9000L, 10000L, 11000L, 12000L, 13000L, 14000L, 15000L, 16000L
+};
+
+typedef void (*irqCallback)  (void);
+
+#if (STM32_TIMER_INTERRUPT_DEBUG > 0)
+void printStatus(uint16_t index, unsigned long deltaMillis, unsigned long currentMillis)
+{
+  Serial.print(TimerInterval[index]/1000);
+  Serial.print("s: Delta ms = ");
+  Serial.print(deltaMillis);
+  Serial.print(", ms = ");
+  Serial.println(currentMillis);
+}
+#endif
+
 // In STM32, avoid doing something fancy in ISR, for example complex Serial.print with String() argument
 // The pure simple Serial.prints here are just for demonstration and testing. Must be eliminate in working environment
 // Or you can get this run-time error / crash
-void doingSomething2s()
+void doingSomething0()
 {
-  static unsigned long previousMillis = lastMillis;
-  unsigned long deltaMillis = millis() - previousMillis;
+  static unsigned long previousMillis = startMillis;
+  
+  unsigned long currentMillis = millis();
+  unsigned long deltaMillis   = currentMillis - previousMillis;
 
 #if (STM32_TIMER_INTERRUPT_DEBUG > 0)
-  if (previousMillis > TIMER_INTERVAL_2S)
-  {
-    Serial.print("2s: Delta ms = ");
-    Serial.println(deltaMillis);
-  }
+  printStatus(0, deltaMillis, currentMillis);
 #endif
 
-  previousMillis = millis();
+  previousMillis = currentMillis;
+}
+
+void doingSomething1()
+{
+  static unsigned long previousMillis = startMillis;
+  
+  unsigned long currentMillis = millis();
+  unsigned long deltaMillis   = currentMillis - previousMillis;
+
+#if (STM32_TIMER_INTERRUPT_DEBUG > 0)
+  printStatus(1, deltaMillis, currentMillis);
+#endif
+
+  previousMillis = currentMillis;
+}
+
+void doingSomething2()
+{
+  static unsigned long previousMillis = startMillis;
+  
+  unsigned long currentMillis = millis();
+  unsigned long deltaMillis   = currentMillis - previousMillis;
+
+#if (STM32_TIMER_INTERRUPT_DEBUG > 0)
+  printStatus(2, deltaMillis, currentMillis);
+#endif
+
+  previousMillis = currentMillis;
+}
+
+void doingSomething3()
+{
+  static unsigned long previousMillis = startMillis;
+  
+  unsigned long currentMillis = millis();
+  unsigned long deltaMillis   = currentMillis - previousMillis;
+
+#if (STM32_TIMER_INTERRUPT_DEBUG > 0)
+  printStatus(3, deltaMillis, currentMillis);
+#endif
+
+  previousMillis = currentMillis;
+}
+
+void doingSomething4()
+{
+  static unsigned long previousMillis = startMillis;
+  
+  unsigned long currentMillis = millis();
+  unsigned long deltaMillis   = currentMillis - previousMillis;
+
+#if (STM32_TIMER_INTERRUPT_DEBUG > 0)
+  printStatus(4, deltaMillis, currentMillis);
+#endif
+
+  previousMillis = currentMillis;
+}
+
+void doingSomething5()
+{
+  static unsigned long previousMillis = startMillis;
+  
+  unsigned long currentMillis = millis();
+  unsigned long deltaMillis   = currentMillis - previousMillis;
+
+#if (STM32_TIMER_INTERRUPT_DEBUG > 0)
+  printStatus(5, deltaMillis, currentMillis);
+#endif
+
+  previousMillis = currentMillis;
+}
+
+void doingSomething6()
+{
+  static unsigned long previousMillis = startMillis;
+  
+  unsigned long currentMillis = millis();
+  unsigned long deltaMillis   = currentMillis - previousMillis;
+
+#if (STM32_TIMER_INTERRUPT_DEBUG > 0)
+  printStatus(6, deltaMillis, currentMillis);
+#endif
+
+  previousMillis = currentMillis;
+}
+
+void doingSomething7()
+{
+  static unsigned long previousMillis = startMillis;
+  
+  unsigned long currentMillis = millis();
+  unsigned long deltaMillis   = currentMillis - previousMillis;
+
+#if (STM32_TIMER_INTERRUPT_DEBUG > 0)
+  printStatus(7, deltaMillis, currentMillis);
+#endif
+
+  previousMillis = currentMillis;
+}
+
+void doingSomething8()
+{
+  static unsigned long previousMillis = startMillis;
+  
+  unsigned long currentMillis = millis();
+  unsigned long deltaMillis   = currentMillis - previousMillis;
+
+#if (STM32_TIMER_INTERRUPT_DEBUG > 0)
+  printStatus(8, deltaMillis, currentMillis);
+#endif
+
+  previousMillis = currentMillis;
+}
+
+void doingSomething9()
+{
+  static unsigned long previousMillis = startMillis;
+  
+  unsigned long currentMillis = millis();
+  unsigned long deltaMillis   = currentMillis - previousMillis;
+
+#if (STM32_TIMER_INTERRUPT_DEBUG > 0)
+  printStatus(9, deltaMillis, currentMillis);
+#endif
+
+  previousMillis = currentMillis;
+}
+
+void doingSomething10()
+{
+  static unsigned long previousMillis = startMillis;
+  
+  unsigned long currentMillis = millis();
+  unsigned long deltaMillis   = currentMillis - previousMillis;
+
+#if (STM32_TIMER_INTERRUPT_DEBUG > 0)
+  printStatus(10, deltaMillis, currentMillis);
+#endif
+
+  previousMillis = currentMillis;
 }
 
 // In STM32, avoid doing something fancy in ISR, for example complex Serial.print with String() argument
 // The pure simple Serial.prints here are just for demonstration and testing. Must be eliminate in working environment
 // Or you can get this run-time error / crash
-void doingSomething5s()
+void doingSomething11()
 {
-  static unsigned long previousMillis = lastMillis;
-  unsigned long deltaMillis = millis() - previousMillis;
+  static unsigned long previousMillis = startMillis;
+  
+  unsigned long currentMillis = millis();
+  unsigned long deltaMillis   = currentMillis - previousMillis;
 
 #if (STM32_TIMER_INTERRUPT_DEBUG > 0)
-  if (previousMillis > TIMER_INTERVAL_5S)
-  {
-    Serial.print("5s: Delta ms = ");
-    Serial.println(deltaMillis);
-  }
+  printStatus(11, deltaMillis, currentMillis);
 #endif
 
-  previousMillis = millis();
+  previousMillis = currentMillis;
 }
 
 // In STM32, avoid doing something fancy in ISR, for example complex Serial.print with String() argument
 // The pure simple Serial.prints here are just for demonstration and testing. Must be eliminate in working environment
 // Or you can get this run-time error / crash
-void doingSomething11s()
+void doingSomething12()
 {
-  static unsigned long previousMillis = lastMillis;
-  unsigned long deltaMillis = millis() - previousMillis;
+  static unsigned long previousMillis = startMillis;
+  
+  unsigned long currentMillis = millis();
+  unsigned long deltaMillis   = currentMillis - previousMillis;
 
 #if (STM32_TIMER_INTERRUPT_DEBUG > 0)
-  if (previousMillis > TIMER_INTERVAL_11S)
-  {
-    Serial.print("11s: Delta ms = ");
-    Serial.println(deltaMillis);
-  }
+  printStatus(12, deltaMillis, currentMillis);
 #endif
 
-  previousMillis = millis();
+  previousMillis = currentMillis;
 }
 
-// In STM32, avoid doing something fancy in ISR, for example complex Serial.print with String() argument
-// The pure simple Serial.prints here are just for demonstration and testing. Must be eliminate in working environment
-// Or you can get this run-time error / crash
-void doingSomething101s()
+void doingSomething13()
 {
-  static unsigned long previousMillis = lastMillis;
-  unsigned long deltaMillis = millis() - previousMillis;
+  static unsigned long previousMillis = startMillis;
+  
+  unsigned long currentMillis = millis();
+  unsigned long deltaMillis   = currentMillis - previousMillis;
 
 #if (STM32_TIMER_INTERRUPT_DEBUG > 0)
-  if (previousMillis > TIMER_INTERVAL_101S)
-  {
-    Serial.print("101s: Delta ms = ");
-    Serial.println(deltaMillis);
-  }
+  printStatus(13, deltaMillis, currentMillis);
 #endif
 
-  previousMillis = millis();
+  previousMillis = currentMillis;
 }
 
-#define BLYNK_TIMER_MS        2000L
+void doingSomething14()
+{
+  static unsigned long previousMillis = startMillis;
+  
+  unsigned long currentMillis = millis();
+  unsigned long deltaMillis   = currentMillis - previousMillis;
+
+#if (STM32_TIMER_INTERRUPT_DEBUG > 0)
+  printStatus(14, deltaMillis, currentMillis);
+#endif
+
+  previousMillis = currentMillis;
+}
+
+void doingSomething15()
+{
+  static unsigned long previousMillis = startMillis;
+  
+  unsigned long currentMillis = millis();
+  unsigned long deltaMillis   = currentMillis - previousMillis;
+
+#if (STM32_TIMER_INTERRUPT_DEBUG > 0)
+  printStatus(15, deltaMillis, currentMillis);
+#endif
+
+  previousMillis = currentMillis;
+}
+
+irqCallback irqCallbackFunc[NUMBER_ISR_TIMERS] =
+{
+  doingSomething0,  doingSomething1,  doingSomething2,  doingSomething3, 
+  doingSomething4,  doingSomething5,  doingSomething6,  doingSomething7, 
+  doingSomething8,  doingSomething9,  doingSomething10, doingSomething11,
+  doingSomething12, doingSomething13, doingSomething14, doingSomething15
+};
+
+////////////////////////////////////////////////
+
+
+#define SIMPLE_TIMER_MS        2000L
+
+// Init SimpleTimer
+SimpleTimer simpleTimer;
 
 // Here is software Timer, you can do somewhat fancy stuffs without many issues.
 // But always avoid
 // 1. Long delay() it just doing nothing and pain-without-gain wasting CPU power.Plan and design your code / strategy ahead
 // 2. Very long "do", "while", "for" loops without predetermined exit time.
-void blynkDoingSomething2s()
+void simpleTimerDoingSomething2s()
 {
-  static unsigned long previousMillis = lastMillis;
-  Serial.println("blynkDoingSomething2s: Delta programmed ms = " + String(BLYNK_TIMER_MS) + ", actual = " + String(millis() - previousMillis));
+  static unsigned long previousMillis = startMillis;
+  Serial.println("simpleTimerDoingSomething2s: Delta programmed ms = " + String(SIMPLE_TIMER_MS) + ", actual = " + String(millis() - previousMillis));
   previousMillis = millis();
 }
 
@@ -671,56 +820,34 @@ void setup()
   Serial.begin(115200);
   while (!Serial);
   
-  Serial.println("\nStarting ISR_Timer_Complex on " + String(BOARD_NAME));
+  Serial.println("\nStarting ISR_16_Timers_Array on " + String(BOARD_NAME));
   Serial.println("Version : " + String(STM32_TIMER_INTERRUPT_VERSION));
-
-  // You need this timer for non-critical tasks. Avoid abusing ISR if not absolutely necessary.
-  blynkTimer.setInterval(BLYNK_TIMER_MS, blynkDoingSomething2s);
+  Serial.println("CPU Frequency = " + String(F_CPU / 1000000) + " MHz");
 
   // Interval in microsecs
-  if (ITimer.attachInterruptInterval(HW_TIMER_INTERVAL_MS * 1000, TimerHandler))
+  if (ITimer.attachInterruptInterval(HW_TIMER_INTERVAL_US, TimerHandler))
   {
-    lastMillis = millis();
-    Serial.println("Starting  ITimer OK, millis() = " + String(lastMillis));
+    startMillis = millis();
+    Serial.println("Starting  ITimer OK, millis() = " + String(startMillis));
   }
   else
     Serial.println("Can't set ITimer correctly. Select another freq. or interval");
 
   // Just to demonstrate, don't use too many ISR Timers if not absolutely necessary
   // You can use up to 16 timer for each ISR_Timer
-  ISR_Timer.setInterval(TIMER_INTERVAL_2S, doingSomething2s);
-  ISR_Timer.setInterval(TIMER_INTERVAL_5S, doingSomething5s);
-  ISR_Timer.setInterval(TIMER_INTERVAL_11S, doingSomething11s);
-  ISR_Timer.setInterval(TIMER_INTERVAL_101S, doingSomething101s);
-
-#if !(USE_BUILTIN_ETHERNET || USE_UIP_ETHERNET)
-  pinMode(SDCARD_CS, OUTPUT);
-  digitalWrite(SDCARD_CS, HIGH); // Deselect the SD card
-#endif
-
-#if USE_LOCAL_SERVER
-  Blynk.begin(auth, server, BLYNK_HARDWARE_PORT);
-#else
-  Blynk.begin(auth);
-  // You can also specify server:
-  //Blynk.begin(auth, server, BLYNK_HARDWARE_PORT);
-#endif
-
-  if (Blynk.connected())
+  for (int i = 0; i < NUMBER_ISR_TIMERS; i++)
   {
-    Serial.print(F("IP = "));
-    Serial.println(Ethernet.localIP());
+    ISR_Timer.setInterval(TimerInterval[i], irqCallbackFunc[i]); 
   }
+
+  // You need this timer for non-critical tasks. Avoid abusing ISR if not absolutely necessary.
+  simpleTimer.setInterval(SIMPLE_TIMER_MS, simpleTimerDoingSomething2s);
 }
 
-#define BLOCKING_TIME_MS      3000L
+#define BLOCKING_TIME_MS      10000L
 
 void loop()
 {
-  static bool needWiFiBegin = true;
-
-  Blynk.run();
-
   // This unadvised blocking task is used to demonstrate the blocking effects onto the execution and accuracy to Software timer
   // You see the time elapse of ISR_Timer still accurate, whereas very unaccurate for Software Timer
   // The time elapse for 2000ms software timer now becomes 3000ms (BLOCKING_TIME_MS)
@@ -729,7 +856,7 @@ void loop()
 
   // You need this Software timer for non-critical tasks. Avoid abusing ISR if not absolutely necessary
   // You don't need to and never call ISR_Timer.run() here in the loop(). It's already handled by ISR timer.
-  blynkTimer.run();
+  simpleTimer.run();
 }
 ```
 ---
@@ -743,7 +870,7 @@ While software timer, **programmed for 2s, is activated after 9.782s !!!**. Then
 
 ```
 Starting ISR_Timer_Complex on NUCLEO_F767ZI
-Version : 1.0.0
+Version : 1.0.1
 STM32TimerInterrupt: Timer Input Freq (Hz) = 216000000, _fre = 1000000.00, _count = 50000
 Starting  ITimer OK, millis() = 6
 [9] MAC:FE-E1-88-EC-DD-95
@@ -801,7 +928,7 @@ blynkDoingSomething2s: Delta programmed ms = 2000, actual = 3000
 ```
 
 Starting TimerInterruptTest on NUCLEO_F767ZI
-Version : 1.0.0
+Version : 1.0.1
 STM32TimerInterrupt: Timer Input Freq (Hz) = 216000000, _fre = 1000000.00, _count = 1000000
 Starting  ITimer0 OK, millis() = 108
 STM32TimerInterrupt: Timer Input Freq (Hz) = 108000000, _fre = 1000000.00, _count = 3000000
@@ -852,7 +979,7 @@ Start ITimer0, millis() = 140028
 
 ```
 Starting Argument_None on NUCLEO_F767ZI
-Version : 1.0.0
+Version : 1.0.1
 STM32TimerInterrupt: Timer Input Freq (Hz) = 216000000, _fre = 1000000.00, _count = 1000000
 Starting  ITimer0 OK, millis() = 106
 STM32TimerInterrupt: Timer Input Freq (Hz) = 108000000, _fre = 1000000.00, _count = 5000000
@@ -909,6 +1036,10 @@ ITimer0: millis() = 37106, delta = 1000
 ---
 ---
 
+### Releases v1.0.1
+
+1. Add complicated example [ISR_16_Timers_Array](examples/ISR_16_Timers_Array) utilizing and demonstrating the full usage of 16 independent ISR Timers.
+
 ### Releases v1.0.0
 
 1. Permit up to 16 super-long-time, super-accurate ISR-based timers to avoid being blocked
@@ -950,16 +1081,15 @@ Submit issues to: [STM32_TimerInterrupt issues](https://github.com/khoih-prog/ST
 ## TO DO
 
 1. Search for bug and improvement.
-2. Similar features for remaining Arduino boards such as SAMD21, SAMD51, SAM-DUE, nRF52
+2. Similar features for remaining Arduino boards such as SAM-DUE
 
 
 ## DONE
 
-For current version v1.0.0
-
 1. Basic hardware timers for STM32.
 2. More hardware-initiated software-enabled timers
 3. Longer time interval
+4. Similar features for remaining Arduino boards such as SAMD21, SAMD51, nRF52, Teensy
 
 ---
 ---

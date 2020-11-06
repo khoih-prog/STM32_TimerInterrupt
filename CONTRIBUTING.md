@@ -15,7 +15,7 @@ If you don't find anything, please [open a new issue](https://github.com/khoih-p
 Please ensure to specify the following:
 
 * Arduino IDE version (e.g. 1.8.13) or Platform.io version
-* `STM326` Core Version (e.g. STM32 core v1.9.0)
+* `STM32` Core Version (e.g. STM32 core v1.9.0)
 * Contextual information (e.g. what you were trying to achieve)
 * Simplest possible steps to reproduce
 * Anything that might be relevant in your opinion, such as:

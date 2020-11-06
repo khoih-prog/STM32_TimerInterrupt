@@ -6,6 +6,8 @@ STM32TimerInterrupt	KEYWORD1
 STM32Timer	KEYWORD1
 STM32_ISRTimer KEYWORD1
 STM32_ISR_Timer KEYWORD1
+timerCallback KEYWORD1
+timerCallback_p KEYWORD1
 
 #######################################
 # Methods and Functions (KEYWORD2)

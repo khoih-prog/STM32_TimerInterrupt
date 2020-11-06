@@ -19,12 +19,15 @@
    Based on BlynkTimer.h
    Author: Volodymyr Shymanskyy
 
-   Version: 1.0.0
+   Version: 1.0.1
 
    Version Modified By   Date      Comments
    ------- -----------  ---------- -----------
-   1.0.0   K Hoang      30/10/2020 Initial coding
+    1.0.0   K Hoang      30/10/2020 Initial coding
+    1.0.1   K Hoang      06/11/2020 Add complicated example ISR_16_Timers_Array using all 16 independent ISR Timers.
 *****************************************************************************************************************************/
+
+#pragma once
 
 #include "STM32_ISR_Timer.h"
 #include <string.h>
@@ -38,7 +41,7 @@ void STM32_ISR_Timer::init()
 {
   unsigned long current_millis = millis();   //elapsed();
 
-  for (int i = 0; i < MAX_TIMERS; i++) 
+  for (int i = 0; i < MAX_NUMBER_TIMERS; i++) 
   {
     memset((void*) &timer[i], 0, sizeof (timer_t));
     timer[i].prev_millis = current_millis;
@@ -55,10 +58,10 @@ void STM32_ISR_Timer::run()
   // get current time
   current_millis = millis();   //elapsed();
 
-  for (i = 0; i < MAX_TIMERS; i++) 
+  for (i = 0; i < MAX_NUMBER_TIMERS; i++) 
   {
 
-    timer[i].toBeCalled = DEFCALL_DONTRUN;
+    timer[i].toBeCalled = TIMER_DEFCALL_DONTRUN;
 
     // no callback == no timer, i.e. jump over empty slots
     if (timer[i].callback != NULL) 
@@ -79,20 +82,20 @@ void STM32_ISR_Timer::run()
         {
 
           // "run forever" timers must always be executed
-          if (timer[i].maxNumRuns == RUN_FOREVER) 
+          if (timer[i].maxNumRuns == TIMER_RUN_FOREVER) 
           {
-            timer[i].toBeCalled = DEFCALL_RUNONLY;
+            timer[i].toBeCalled = TIMER_DEFCALL_RUNONLY;
           }
           // other timers get executed the specified number of times
           else if (timer[i].numRuns < timer[i].maxNumRuns) 
           {
-            timer[i].toBeCalled = DEFCALL_RUNONLY;
+            timer[i].toBeCalled = TIMER_DEFCALL_RUNONLY;
             timer[i].numRuns++;
 
             // after the last run, delete the timer
             if (timer[i].numRuns >= timer[i].maxNumRuns) 
             {
-              timer[i].toBeCalled = DEFCALL_RUNANDDEL;
+              timer[i].toBeCalled = TIMER_DEFCALL_RUNANDDEL;
             }
           }
         }
@@ -100,17 +103,17 @@ void STM32_ISR_Timer::run()
     }
   }
 
-  for (i = 0; i < MAX_TIMERS; i++) 
+  for (i = 0; i < MAX_NUMBER_TIMERS; i++) 
   {
-    if (timer[i].toBeCalled == DEFCALL_DONTRUN)
+    if (timer[i].toBeCalled == TIMER_DEFCALL_DONTRUN)
       continue;
 
     if (timer[i].hasParam)
-      (*(timer_callback_p)timer[i].callback)(timer[i].param);
+      (*(timerCallback_p)timer[i].callback)(timer[i].param);
     else
-      (*(timer_callback)timer[i].callback)();
+      (*(timerCallback)timer[i].callback)();
 
-    if (timer[i].toBeCalled == DEFCALL_RUNANDDEL)
+    if (timer[i].toBeCalled == TIMER_DEFCALL_RUNANDDEL)
       deleteTimer(i);
   }
 }
@@ -121,13 +124,13 @@ void STM32_ISR_Timer::run()
 int STM32_ISR_Timer::findFirstFreeSlot() 
 {
   // all slots are used
-  if (numTimers >= MAX_TIMERS) 
+  if (numTimers >= MAX_NUMBER_TIMERS) 
   {
     return -1;
   }
 
   // return the first slot with no callback (i.e. free)
-  for (int i = 0; i < MAX_TIMERS; i++) 
+  for (int i = 0; i < MAX_NUMBER_TIMERS; i++) 
   {
     if (timer[i].callback == NULL) 
     {
@@ -174,39 +177,39 @@ int STM32_ISR_Timer::setupTimer(unsigned long d, void* f, void* p, bool h, unsig
 }
 
 
-int STM32_ISR_Timer::setTimer(unsigned long d, timer_callback f, unsigned n) 
+int STM32_ISR_Timer::setTimer(unsigned long d, timerCallback f, unsigned n) 
 {
   return setupTimer(d, (void *)f, NULL, false, n);
 }
 
-int STM32_ISR_Timer::setTimer(unsigned long d, timer_callback_p f, void* p, unsigned n) 
+int STM32_ISR_Timer::setTimer(unsigned long d, timerCallback_p f, void* p, unsigned n) 
 {
   return setupTimer(d, (void *)f, p, true, n);
 }
 
-int STM32_ISR_Timer::setInterval(unsigned long d, timer_callback f) 
+int STM32_ISR_Timer::setInterval(unsigned long d, timerCallback f) 
 {
-  return setupTimer(d, (void *)f, NULL, false, RUN_FOREVER);
+  return setupTimer(d, (void *)f, NULL, false, TIMER_RUN_FOREVER);
 }
 
-int STM32_ISR_Timer::setInterval(unsigned long d, timer_callback_p f, void* p) 
+int STM32_ISR_Timer::setInterval(unsigned long d, timerCallback_p f, void* p) 
 {
-  return setupTimer(d, (void *)f, p, true, RUN_FOREVER);
+  return setupTimer(d, (void *)f, p, true, TIMER_RUN_FOREVER);
 }
 
-int STM32_ISR_Timer::setTimeout(unsigned long d, timer_callback f) 
+int STM32_ISR_Timer::setTimeout(unsigned long d, timerCallback f) 
 {
-  return setupTimer(d, (void *)f, NULL, false, RUN_ONCE);
+  return setupTimer(d, (void *)f, NULL, false, TIMER_RUN_ONCE);
 }
 
-int STM32_ISR_Timer::setTimeout(unsigned long d, timer_callback_p f, void* p) 
+int STM32_ISR_Timer::setTimeout(unsigned long d, timerCallback_p f, void* p) 
 {
-  return setupTimer(d, (void *)f, p, true, RUN_ONCE);
+  return setupTimer(d, (void *)f, p, true, TIMER_RUN_ONCE);
 }
 
 bool STM32_ISR_Timer::changeInterval(unsigned numTimer, unsigned long d) 
 {
-  if (numTimer >= MAX_TIMERS) 
+  if (numTimer >= MAX_NUMBER_TIMERS) 
   {
     return false;
   }
@@ -226,7 +229,7 @@ bool STM32_ISR_Timer::changeInterval(unsigned numTimer, unsigned long d)
 
 void STM32_ISR_Timer::deleteTimer(unsigned timerId) 
 {
-  if (timerId >= MAX_TIMERS) 
+  if (timerId >= MAX_NUMBER_TIMERS) 
   {
     return;
   }
@@ -251,7 +254,7 @@ void STM32_ISR_Timer::deleteTimer(unsigned timerId)
 // function contributed by code@rowansimms.com
 void STM32_ISR_Timer::restartTimer(unsigned numTimer) 
 {
-  if (numTimer >= MAX_TIMERS) 
+  if (numTimer >= MAX_NUMBER_TIMERS) 
   {
     return;
   }
@@ -262,7 +265,7 @@ void STM32_ISR_Timer::restartTimer(unsigned numTimer)
 
 bool STM32_ISR_Timer::isEnabled(unsigned numTimer) 
 {
-  if (numTimer >= MAX_TIMERS) 
+  if (numTimer >= MAX_NUMBER_TIMERS) 
   {
     return false;
   }
@@ -273,7 +276,7 @@ bool STM32_ISR_Timer::isEnabled(unsigned numTimer)
 
 void STM32_ISR_Timer::enable(unsigned numTimer) 
 {
-  if (numTimer >= MAX_TIMERS) 
+  if (numTimer >= MAX_NUMBER_TIMERS) 
   {
     return;
   }
@@ -284,7 +287,7 @@ void STM32_ISR_Timer::enable(unsigned numTimer)
 
 void STM32_ISR_Timer::disable(unsigned numTimer) 
 {
-  if (numTimer >= MAX_TIMERS) 
+  if (numTimer >= MAX_NUMBER_TIMERS) 
   {
     return;
   }
@@ -296,9 +299,9 @@ void STM32_ISR_Timer::enableAll()
 {
   // Enable all timers with a callback assigned (used)
 
-  for (int i = 0; i < MAX_TIMERS; i++) 
+  for (int i = 0; i < MAX_NUMBER_TIMERS; i++) 
   {
-    if (timer[i].callback != NULL && timer[i].numRuns == RUN_FOREVER) 
+    if (timer[i].callback != NULL && timer[i].numRuns == TIMER_RUN_FOREVER) 
     {
       timer[i].enabled = true;
     }
@@ -309,9 +312,9 @@ void STM32_ISR_Timer::disableAll()
 {
   // Disable all timers with a callback assigned (used)
 
-  for (int i = 0; i < MAX_TIMERS; i++) 
+  for (int i = 0; i < MAX_NUMBER_TIMERS; i++) 
   {
-    if (timer[i].callback != NULL && timer[i].numRuns == RUN_FOREVER) 
+    if (timer[i].callback != NULL && timer[i].numRuns == TIMER_RUN_FOREVER) 
     {
       timer[i].enabled = false;
     }
@@ -320,7 +323,7 @@ void STM32_ISR_Timer::disableAll()
 
 void STM32_ISR_Timer::toggle(unsigned numTimer) 
 {
-  if (numTimer >= MAX_TIMERS) 
+  if (numTimer >= MAX_NUMBER_TIMERS) 
   {
     return;
   }

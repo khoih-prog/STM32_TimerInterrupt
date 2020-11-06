@@ -19,11 +19,12 @@
    Based on BlynkTimer.h
    Author: Volodymyr Shymanskyy
 
-   Version: 1.0.0
+   Version: 1.0.1
 
    Version Modified By   Date      Comments
    ------- -----------  ---------- -----------
-   1.0.0   K Hoang      30/10/2020 Initial coding
+    1.0.0   K Hoang      30/10/2020 Initial coding
+    1.0.1   K Hoang      06/11/2020 Add complicated example ISR_16_Timers_Array using all 16 independent ISR Timers.
 *****************************************************************************************************************************/
 
 #pragma once
@@ -48,17 +49,17 @@
 
 #define STM32_ISR_Timer STM32_ISRTimer
 
-typedef void (*timer_callback)(void);
-typedef void (*timer_callback_p)(void *);
+typedef void (*timerCallback)(void);
+typedef void (*timerCallback_p)(void *);
 
 class STM32_ISR_Timer 
 {
 
   public:
     // maximum number of timers
-#define MAX_TIMERS        16
-#define RUN_FOREVER       0
-#define RUN_ONCE          1
+#define MAX_NUMBER_TIMERS       16
+#define TIMER_RUN_FOREVER       0
+#define TIMER_RUN_ONCE          1
 
     // constructor
     STM32_ISR_Timer();
@@ -71,32 +72,32 @@ class STM32_ISR_Timer
     // Timer will call function 'f' every 'd' milliseconds forever
     // returns the timer number (numTimer) on success or
     // -1 on failure (f == NULL) or no free timers
-    int setInterval(unsigned long d, timer_callback f);
+    int setInterval(unsigned long d, timerCallback f);
 
     // Timer will call function 'f' with parameter 'p' every 'd' milliseconds forever
     // returns the timer number (numTimer) on success or
     // -1 on failure (f == NULL) or no free timers
-    int setInterval(unsigned long d, timer_callback_p f, void* p);
+    int setInterval(unsigned long d, timerCallback_p f, void* p);
 
     // Timer will call function 'f' after 'd' milliseconds one time
     // returns the timer number (numTimer) on success or
     // -1 on failure (f == NULL) or no free timers
-    int setTimeout(unsigned long d, timer_callback f);
+    int setTimeout(unsigned long d, timerCallback f);
 
     // Timer will call function 'f' with parameter 'p' after 'd' milliseconds one time
     // returns the timer number (numTimer) on success or
     // -1 on failure (f == NULL) or no free timers
-    int setTimeout(unsigned long d, timer_callback_p f, void* p);
+    int setTimeout(unsigned long d, timerCallback_p f, void* p);
 
     // Timer will call function 'f' every 'd' milliseconds 'n' times
     // returns the timer number (numTimer) on success or
     // -1 on failure (f == NULL) or no free timers
-    int setTimer(unsigned long d, timer_callback f, unsigned n);
+    int setTimer(unsigned long d, timerCallback f, unsigned n);
 
     // Timer will call function 'f' with parameter 'p' every 'd' milliseconds 'n' times
     // returns the timer number (numTimer) on success or
     // -1 on failure (f == NULL) or no free timers
-    int setTimer(unsigned long d, timer_callback_p f, void* p, unsigned n);
+    int setTimer(unsigned long d, timerCallback_p f, void* p, unsigned n);
 
     // updates interval of the specified timer
     bool changeInterval(unsigned numTimer, unsigned long d);
@@ -131,14 +132,14 @@ class STM32_ISR_Timer
     // returns the number of available timers
     unsigned getNumAvailableTimers() 
     {
-      return MAX_TIMERS - numTimers;
+      return MAX_NUMBER_TIMERS - numTimers;
     };
 
   private:
     // deferred call constants
-#define DEFCALL_DONTRUN   0       // don't call the callback function
-#define DEFCALL_RUNONLY   1       // call the callback function but don't delete the timer
-#define DEFCALL_RUNANDDEL 2       // call the callback function and delete the timer
+#define TIMER_DEFCALL_DONTRUN   0       // don't call the callback function
+#define TIMER_DEFCALL_RUNONLY   1       // call the callback function but don't delete the timer
+#define TIMER_DEFCALL_RUNANDDEL 2       // call the callback function and delete the timer
 
     // low level function to initialize and enable a new timer
     // returns the timer number (numTimer) on success or
@@ -161,7 +162,7 @@ class STM32_ISR_Timer
       unsigned      toBeCalled;         // deferred function call (sort of) - N.B.: only used in run()
     } timer_t;
 
-    volatile timer_t timer[MAX_TIMERS];
+    volatile timer_t timer[MAX_NUMBER_TIMERS];
 
     // actual number of timers in use (-1 means uninitialized)
     volatile int numTimers;

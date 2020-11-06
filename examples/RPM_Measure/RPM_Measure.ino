@@ -19,11 +19,12 @@
    Based on BlynkTimer.h
    Author: Volodymyr Shymanskyy
 
-   Version: 1.0.0
+   Version: 1.0.1
 
    Version Modified By   Date      Comments
    ------- -----------  ---------- -----------
     1.0.0   K Hoang      30/10/2020 Initial coding
+    1.0.1   K Hoang      06/11/2020 Add complicated example ISR_16_Timers_Array using all 16 independent ISR Timers.
 *****************************************************************************************************************************/
 /*
    Notes:

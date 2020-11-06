@@ -19,11 +19,12 @@
    Based on BlynkTimer.h
    Author: Volodymyr Shymanskyy
 
-   Version: 1.0.0
+   Version: 1.0.1
 
    Version Modified By   Date      Comments
    ------- -----------  ---------- -----------
     1.0.0   K Hoang      30/10/2020 Initial coding
+    1.0.1   K Hoang      06/11/2020 Add complicated example ISR_16_Timers_Array using all 16 independent ISR Timers.
 *****************************************************************************************************************************/
 /*
    Notes:
@@ -117,8 +118,7 @@
 #include "STM32TimerInterrupt.h"
 #include "STM32_ISR_Timer.h"
 
-#define TIMER_INTERVAL_MS         100
-#define HW_TIMER_INTERVAL_MS      50
+#define HW_TIMER_INTERVAL_US      100L
 
 volatile uint32_t lastMillis = 0;
 
@@ -157,7 +157,7 @@ void TimerHandler(void)
   ISR_Timer.run();
 
   // Toggle LED every LED_TOGGLE_INTERVAL_MS = 5000ms = 5s
-  if (++timeRun == (LED_TOGGLE_INTERVAL_MS / HW_TIMER_INTERVAL_MS) )
+  if (++timeRun == ( (LED_TOGGLE_INTERVAL_MS * 1000 ) / HW_TIMER_INTERVAL_US) )
   {
     timeRun = 0;
 
@@ -274,7 +274,7 @@ void setup()
   blynkTimer.setInterval(BLYNK_TIMER_MS, blynkDoingSomething2s);
 
   // Interval in microsecs
-  if (ITimer.attachInterruptInterval(HW_TIMER_INTERVAL_MS * 1000, TimerHandler))
+  if (ITimer.attachInterruptInterval(HW_TIMER_INTERVAL_US, TimerHandler))
   {
     lastMillis = millis();
     Serial.println("Starting  ITimer OK, millis() = " + String(lastMillis));
