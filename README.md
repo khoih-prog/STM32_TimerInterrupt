@@ -11,7 +11,7 @@
 
 ## Features
 
-This library enables you to use Interrupt from Hardware Timers on an STM32-based board, such as STM32F/L/H/G/WB/MP1. As **Hardware Timers are rare, and very precious assets** of any board, this library now enable you to use up to **16 ISR-based Timers, while consuming only 1 Hardware Timer**. Timers' interval is very long (**ulong millisecs**). 
+This library enables you to use Interrupt from Hardware Timers on an STM32-based board, such as STM32F/L/H/G/WB/MP1. As **Hardware Timers are rare, and very precious assets** of any board, this library now enables you to use up to **16 ISR-based Timers, while consuming only 1 Hardware Timer**. Timers' interval is very long (**ulong millisecs**). 
 
 ### Why do we need this Hardware Timer Interrupt?
 
@@ -91,6 +91,8 @@ The catch is **your function is now part of an ISR (Interrupt Service Routine), 
    - [`EthernetLarge library v2.0.0+`](https://github.com/OPEnSLab-OSU/EthernetLarge) for W5100, W5200 and W5500. ***Ready*** from v1.0.1.
    - [`UIPEthernet library v2.0.9+`](https://github.com/UIPEthernet/UIPEthernet) for ENC28J60.
 
+ 5. To use with certain example
+   - [`SimpleTimer library`](https://github.com/schinken/SimpleTimer) for [ISR_16_Timers_Array example](examples/ISR_16_Timers_Array).
 ---
 ---
 
@@ -120,7 +122,9 @@ Another way to install is to:
 ---
 ---
 
-### Libraries' Patches
+### Optional Libraries' Patches
+
+##### Notes: These patches are totally optional and necessary only when you use the related Ethernet library and get certain error or issues.
 
 1. If your application requires 2K+ HTML page, the current [`Ethernet library`](https://www.arduino.cc/en/Reference/Ethernet) must be modified if you are using W5200/W5500 Ethernet shields. W5100 is not supported for 2K+ buffer. If you use boards requiring different CS/SS pin for W5x00 Ethernet shield, for example ESP32, ESP8266, nRF52, etc., you also have to modify the following libraries to be able to specify the CS/SS pin correctly.
 
