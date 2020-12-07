@@ -42,6 +42,12 @@ The catch is **your function is now part of an ISR (Interrupt Service Routine), 
 ---
 ---
 
+### Releases v1.1.1
+
+1. Add example [**Change_Interval**](examples/Change_Interval) and [**ISR_16_Timers_Array_Complex**](examples/ISR_16_Timers_Array_Complex)
+2. Bump up version to sync with other TimerInterrupt Libraries. Modify Version String.
+
+
 ### Releases v1.0.1
 
 1. Add complicated example [ISR_16_Timers_Array](examples/ISR_16_Timers_Array) utilizing and demonstrating the full usage of 16 independent ISR Timers.
@@ -78,7 +84,7 @@ The catch is **your function is now part of an ISR (Interrupt Service Routine), 
 ---
 ---
 
-## Prerequisite
+## Prerequisites
 
  1. [`Arduino IDE 1.8.13+` for Arduino](https://www.arduino.cc/en/Main/Software)
  2. [`Arduino Core for STM32 1.9.0+`](https://github.com/stm32duino/Arduino_Core_STM32) for STM32 (Use Arduino Board Manager)
@@ -116,7 +122,7 @@ Another way to install is to:
 
 1. Install [VS Code](https://code.visualstudio.com/)
 2. Install [PlatformIO](https://platformio.org/platformio-ide)
-3. Install [**STM32_TimerInterrupt** library](https://platformio.org/lib/show/11381/STM32_TimerInterrupt) by using [Library Manager](https://platformio.org/lib/show/11381/STM32_TimerInterrupt/installation). Search for **STM32_TimerInterrupt** in [Platform.io Author's Libraries](https://platformio.org/lib/search?query=author:%22Khoi%20Hoang%22)
+3. Install [**STM32_TimerInterrupt** library](https://platformio.org/lib/show/11381/STM32_TimerInterrupt) or [**STM32_TimerInterrupt** library](https://platformio.org/lib/show/11419/STM32_TimerInterrupt) by using [Library Manager](https://platformio.org/lib/show/11381/STM32_TimerInterrupt/installation). Search for **STM32_TimerInterrupt** in [Platform.io Author's Libraries](https://platformio.org/lib/search?query=author:%22Khoi%20Hoang%22)
 4. Use included [platformio.ini](platformio/platformio.ini) file from examples to ensure that all dependent libraries will installed automatically. Please visit documentation for the other options and examples at [Project Configuration File](https://docs.platformio.org/page/projectconf.html)
 
 ---
@@ -459,12 +465,14 @@ void setup()
  6. [SwitchDebounce](examples/SwitchDebounce)
  7. [TimerInterruptTest](examples/TimerInterruptTest)
  8. [TimerInterruptLEDDemo](examples/TimerInterruptLEDDemo)
+ 9. [**Change_Interval**](examples/Change_Interval). New
+10. [**ISR_16_Timers_Array_Complex**](examples/ISR_16_Timers_Array_Complex). New
  
 
 ---
 ---
 
-### Example [ISR_16_Timers_Array](examples/ISR_16_Timers_Array)
+### Example [ISR_16_Timers_Array_Complex](examples/ISR_16_Timers_Array_Complex)
 
 ```
 #if !( defined(STM32F0) || defined(STM32F1) || defined(STM32F2) || defined(STM32F3)  ||defined(STM32F4) || defined(STM32F7) || \
@@ -494,7 +502,7 @@ void setup()
   #define LED_RED           3
 #endif
 
-#define HW_TIMER_INTERVAL_US      100L
+#define HW_TIMER_INTERVAL_US      10000L
 
 volatile uint32_t startMillis = 0;
 
@@ -510,26 +518,20 @@ STM32Timer ITimer(TIM1);
 // Each STM32_ISR_Timer can service 16 different ISR-based timers
 STM32_ISR_Timer ISR_Timer;
 
+
 #define LED_TOGGLE_INTERVAL_MS        2000L
 
 void TimerHandler(void)
 {
   static bool toggle  = false;
-  static bool started = false;
   static int timeRun  = 0;
 
   ISR_Timer.run();
 
-  // Toggle LED every LED_TOGGLE_INTERVAL_MS = 5000ms = 5s
-  if (++timeRun == ( (LED_TOGGLE_INTERVAL_MS * 1000 ) / HW_TIMER_INTERVAL_US) )
+  // Toggle LED every LED_TOGGLE_INTERVAL_MS = 2000ms = 2s
+  if (++timeRun == ((LED_TOGGLE_INTERVAL_MS * 1000) / HW_TIMER_INTERVAL_US) )
   {
     timeRun = 0;
-
-    if (!started)
-    {
-      started = true;
-      pinMode(LED_BUILTIN, OUTPUT);
-    }
 
     //timer interrupt toggles pin LED_BUILTIN
     digitalWrite(LED_BUILTIN, toggle);
@@ -537,271 +539,181 @@ void TimerHandler(void)
   }
 }
 
-#define NUMBER_ISR_TIMERS         16
+/////////////////////////////////////////////////
 
-// You can assign any interval for any timer here, in milliseconds
-uint32_t TimerInterval[NUMBER_ISR_TIMERS] =
-{
-  1000L,  2000L,  3000L,  4000L,  5000L,  6000L,  7000L,  8000L,
-  9000L, 10000L, 11000L, 12000L, 13000L, 14000L, 15000L, 16000L
-};
+#define NUMBER_ISR_TIMERS         16
 
 typedef void (*irqCallback)  (void);
 
-#if (STM32_TIMER_INTERRUPT_DEBUG > 0)
-void printStatus(uint16_t index, unsigned long deltaMillis, unsigned long currentMillis)
-{
-  Serial.print(TimerInterval[index]/1000);
-  Serial.print("s: Delta ms = ");
-  Serial.print(deltaMillis);
-  Serial.print(", ms = ");
-  Serial.println(currentMillis);
-}
+/////////////////////////////////////////////////
+
+#define USE_COMPLEX_STRUCT      true
+
+#if USE_COMPLEX_STRUCT
+
+  typedef struct 
+  {
+    irqCallback   irqCallbackFunc;
+    uint32_t      TimerInterval;
+    unsigned long deltaMillis;
+    unsigned long previousMillis;
+  } ISRTimerData;
+  
+  // In NRF52, avoid doing something fancy in ISR, for example Serial.print()
+  // The pure simple Serial.prints here are just for demonstration and testing. Must be eliminate in working environment
+  // Or you can get this run-time error / crash
+  
+  void doingSomething(int index);
+
+#else
+
+  volatile unsigned long deltaMillis    [NUMBER_ISR_TIMERS] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+  volatile unsigned long previousMillis [NUMBER_ISR_TIMERS] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+  
+  // You can assign any interval for any timer here, in milliseconds
+  uint32_t TimerInterval[NUMBER_ISR_TIMERS] =
+  {
+    5000L,  10000L,  15000L,  20000L,  25000L,  30000L,  35000L,  40000L,
+    45000L, 50000L,  55000L,  60000L,  65000L,  70000L,  75000L,  80000L
+  };
+  
+  void doingSomething(int index)
+  {
+    unsigned long currentMillis  = millis();
+    
+    deltaMillis[index]    = currentMillis - previousMillis[index];
+    previousMillis[index] = currentMillis;
+  }
+
 #endif
 
-// In STM32, avoid doing something fancy in ISR, for example complex Serial.print with String() argument
-// The pure simple Serial.prints here are just for demonstration and testing. Must be eliminate in working environment
-// Or you can get this run-time error / crash
+////////////////////////////////////
+// Shared
+////////////////////////////////////
+
 void doingSomething0()
 {
-  static unsigned long previousMillis = startMillis;
-  
-  unsigned long currentMillis = millis();
-  unsigned long deltaMillis   = currentMillis - previousMillis;
-
-#if (STM32_TIMER_INTERRUPT_DEBUG > 0)
-  printStatus(0, deltaMillis, currentMillis);
-#endif
-
-  previousMillis = currentMillis;
+  doingSomething(0);
 }
 
 void doingSomething1()
 {
-  static unsigned long previousMillis = startMillis;
-  
-  unsigned long currentMillis = millis();
-  unsigned long deltaMillis   = currentMillis - previousMillis;
-
-#if (STM32_TIMER_INTERRUPT_DEBUG > 0)
-  printStatus(1, deltaMillis, currentMillis);
-#endif
-
-  previousMillis = currentMillis;
+  doingSomething(1);
 }
 
 void doingSomething2()
 {
-  static unsigned long previousMillis = startMillis;
-  
-  unsigned long currentMillis = millis();
-  unsigned long deltaMillis   = currentMillis - previousMillis;
-
-#if (STM32_TIMER_INTERRUPT_DEBUG > 0)
-  printStatus(2, deltaMillis, currentMillis);
-#endif
-
-  previousMillis = currentMillis;
+  doingSomething(2);
 }
 
 void doingSomething3()
 {
-  static unsigned long previousMillis = startMillis;
-  
-  unsigned long currentMillis = millis();
-  unsigned long deltaMillis   = currentMillis - previousMillis;
-
-#if (STM32_TIMER_INTERRUPT_DEBUG > 0)
-  printStatus(3, deltaMillis, currentMillis);
-#endif
-
-  previousMillis = currentMillis;
+  doingSomething(3);
 }
 
 void doingSomething4()
 {
-  static unsigned long previousMillis = startMillis;
-  
-  unsigned long currentMillis = millis();
-  unsigned long deltaMillis   = currentMillis - previousMillis;
-
-#if (STM32_TIMER_INTERRUPT_DEBUG > 0)
-  printStatus(4, deltaMillis, currentMillis);
-#endif
-
-  previousMillis = currentMillis;
+  doingSomething(4);
 }
 
 void doingSomething5()
 {
-  static unsigned long previousMillis = startMillis;
-  
-  unsigned long currentMillis = millis();
-  unsigned long deltaMillis   = currentMillis - previousMillis;
-
-#if (STM32_TIMER_INTERRUPT_DEBUG > 0)
-  printStatus(5, deltaMillis, currentMillis);
-#endif
-
-  previousMillis = currentMillis;
+  doingSomething(5);
 }
 
 void doingSomething6()
 {
-  static unsigned long previousMillis = startMillis;
-  
-  unsigned long currentMillis = millis();
-  unsigned long deltaMillis   = currentMillis - previousMillis;
-
-#if (STM32_TIMER_INTERRUPT_DEBUG > 0)
-  printStatus(6, deltaMillis, currentMillis);
-#endif
-
-  previousMillis = currentMillis;
+  doingSomething(6);
 }
 
 void doingSomething7()
 {
-  static unsigned long previousMillis = startMillis;
-  
-  unsigned long currentMillis = millis();
-  unsigned long deltaMillis   = currentMillis - previousMillis;
-
-#if (STM32_TIMER_INTERRUPT_DEBUG > 0)
-  printStatus(7, deltaMillis, currentMillis);
-#endif
-
-  previousMillis = currentMillis;
+  doingSomething(7);
 }
 
 void doingSomething8()
 {
-  static unsigned long previousMillis = startMillis;
-  
-  unsigned long currentMillis = millis();
-  unsigned long deltaMillis   = currentMillis - previousMillis;
-
-#if (STM32_TIMER_INTERRUPT_DEBUG > 0)
-  printStatus(8, deltaMillis, currentMillis);
-#endif
-
-  previousMillis = currentMillis;
+  doingSomething(8);
 }
 
 void doingSomething9()
 {
-  static unsigned long previousMillis = startMillis;
-  
-  unsigned long currentMillis = millis();
-  unsigned long deltaMillis   = currentMillis - previousMillis;
-
-#if (STM32_TIMER_INTERRUPT_DEBUG > 0)
-  printStatus(9, deltaMillis, currentMillis);
-#endif
-
-  previousMillis = currentMillis;
+  doingSomething(9);
 }
 
 void doingSomething10()
 {
-  static unsigned long previousMillis = startMillis;
-  
-  unsigned long currentMillis = millis();
-  unsigned long deltaMillis   = currentMillis - previousMillis;
-
-#if (STM32_TIMER_INTERRUPT_DEBUG > 0)
-  printStatus(10, deltaMillis, currentMillis);
-#endif
-
-  previousMillis = currentMillis;
+  doingSomething(10);
 }
 
-// In STM32, avoid doing something fancy in ISR, for example complex Serial.print with String() argument
-// The pure simple Serial.prints here are just for demonstration and testing. Must be eliminate in working environment
-// Or you can get this run-time error / crash
 void doingSomething11()
 {
-  static unsigned long previousMillis = startMillis;
-  
-  unsigned long currentMillis = millis();
-  unsigned long deltaMillis   = currentMillis - previousMillis;
-
-#if (STM32_TIMER_INTERRUPT_DEBUG > 0)
-  printStatus(11, deltaMillis, currentMillis);
-#endif
-
-  previousMillis = currentMillis;
+  doingSomething(11);
 }
 
-// In STM32, avoid doing something fancy in ISR, for example complex Serial.print with String() argument
-// The pure simple Serial.prints here are just for demonstration and testing. Must be eliminate in working environment
-// Or you can get this run-time error / crash
 void doingSomething12()
 {
-  static unsigned long previousMillis = startMillis;
-  
-  unsigned long currentMillis = millis();
-  unsigned long deltaMillis   = currentMillis - previousMillis;
-
-#if (STM32_TIMER_INTERRUPT_DEBUG > 0)
-  printStatus(12, deltaMillis, currentMillis);
-#endif
-
-  previousMillis = currentMillis;
+  doingSomething(12);
 }
 
 void doingSomething13()
 {
-  static unsigned long previousMillis = startMillis;
-  
-  unsigned long currentMillis = millis();
-  unsigned long deltaMillis   = currentMillis - previousMillis;
-
-#if (STM32_TIMER_INTERRUPT_DEBUG > 0)
-  printStatus(13, deltaMillis, currentMillis);
-#endif
-
-  previousMillis = currentMillis;
+  doingSomething(13);
 }
 
 void doingSomething14()
 {
-  static unsigned long previousMillis = startMillis;
-  
-  unsigned long currentMillis = millis();
-  unsigned long deltaMillis   = currentMillis - previousMillis;
-
-#if (STM32_TIMER_INTERRUPT_DEBUG > 0)
-  printStatus(14, deltaMillis, currentMillis);
-#endif
-
-  previousMillis = currentMillis;
+  doingSomething(14);
 }
 
 void doingSomething15()
 {
-  static unsigned long previousMillis = startMillis;
-  
-  unsigned long currentMillis = millis();
-  unsigned long deltaMillis   = currentMillis - previousMillis;
-
-#if (STM32_TIMER_INTERRUPT_DEBUG > 0)
-  printStatus(15, deltaMillis, currentMillis);
-#endif
-
-  previousMillis = currentMillis;
+  doingSomething(15);
 }
 
-irqCallback irqCallbackFunc[NUMBER_ISR_TIMERS] =
-{
-  doingSomething0,  doingSomething1,  doingSomething2,  doingSomething3, 
-  doingSomething4,  doingSomething5,  doingSomething6,  doingSomething7, 
-  doingSomething8,  doingSomething9,  doingSomething10, doingSomething11,
-  doingSomething12, doingSomething13, doingSomething14, doingSomething15
-};
+#if USE_COMPLEX_STRUCT
 
-////////////////////////////////////////////////
+  ISRTimerData curISRTimerData[NUMBER_ISR_TIMERS] =
+  {
+    //irqCallbackFunc, TimerInterval, deltaMillis, previousMillis
+    { doingSomething0,    5000L, 0, 0 },
+    { doingSomething1,   10000L, 0, 0 },
+    { doingSomething2,   15000L, 0, 0 },
+    { doingSomething3,   20000L, 0, 0 },
+    { doingSomething4,   25000L, 0, 0 },
+    { doingSomething5,   30000L, 0, 0 },
+    { doingSomething6,   35000L, 0, 0 },
+    { doingSomething7,   40000L, 0, 0 },
+    { doingSomething8,   45000L, 0, 0 },
+    { doingSomething9,   50000L, 0, 0 },
+    { doingSomething10,  55000L, 0, 0 },
+    { doingSomething11,  60000L, 0, 0 },
+    { doingSomething12,  65000L, 0, 0 },
+    { doingSomething13,  70000L, 0, 0 },
+    { doingSomething14,  75000L, 0, 0 },
+    { doingSomething15,  80000L, 0, 0 }
+  };
+  
+  void doingSomething(int index)
+  {
+    unsigned long currentMillis  = millis();
+    
+    curISRTimerData[index].deltaMillis    = currentMillis - curISRTimerData[index].previousMillis;
+    curISRTimerData[index].previousMillis = currentMillis;
+  }
 
+#else
+
+  irqCallback irqCallbackFunc[NUMBER_ISR_TIMERS] =
+  {
+    doingSomething0,  doingSomething1,  doingSomething2,  doingSomething3,
+    doingSomething4,  doingSomething5,  doingSomething6,  doingSomething7,
+    doingSomething8,  doingSomething9,  doingSomething10, doingSomething11,
+    doingSomething12, doingSomething13, doingSomething14, doingSomething15
+  };
+
+#endif
+///////////////////////////////////////////
 
 #define SIMPLE_TIMER_MS        2000L
 
@@ -815,24 +727,39 @@ SimpleTimer simpleTimer;
 void simpleTimerDoingSomething2s()
 {
   static unsigned long previousMillis = startMillis;
-  Serial.println("simpleTimerDoingSomething2s: Delta programmed ms = " + String(SIMPLE_TIMER_MS) + ", actual = " + String(millis() - previousMillis));
-  previousMillis = millis();
+
+  unsigned long currMillis = millis();
+
+  Serial.printf("SimpleTimer : %lus, ms = %lu, Dms : %lu\n", SIMPLE_TIMER_MS / 1000, currMillis, currMillis - previousMillis);
+
+  for (int i = 0; i < NUMBER_ISR_TIMERS; i++)
+  {
+#if USE_COMPLEX_STRUCT    
+    Serial.printf("Timer : %d, programmed : %lu, actual : %lu\n", i, curISRTimerData[i].TimerInterval, curISRTimerData[i].deltaMillis);
+#else
+    Serial.printf("Timer : %d, programmed : %lu, actual : %lu\n", i, TimerInterval[i], deltaMillis[i]);
+#endif    
+  }
+
+  previousMillis = currMillis;
 }
 
 void setup()
 {
+  pinMode(LED_BUILTIN, OUTPUT);
+
   Serial.begin(115200);
   while (!Serial);
-  
-  Serial.println("\nStarting ISR_16_Timers_Array on " + String(BOARD_NAME));
-  Serial.println("Version : " + String(STM32_TIMER_INTERRUPT_VERSION));
+
+  Serial.println("\nStarting ISR_16_Timers_Array_Complex on " + String(BOARD_NAME));
+  Serial.println(STM32_TIMER_INTERRUPT_VERSION);
   Serial.println("CPU Frequency = " + String(F_CPU / 1000000) + " MHz");
 
   // Interval in microsecs
   if (ITimer.attachInterruptInterval(HW_TIMER_INTERVAL_US, TimerHandler))
   {
     startMillis = millis();
-    Serial.println("Starting  ITimer OK, millis() = " + String(startMillis));
+    Serial.printf("Starting  ITimer OK, millis() = %ld\n", startMillis);
   }
   else
     Serial.println("Can't set ITimer correctly. Select another freq. or interval");
@@ -841,7 +768,13 @@ void setup()
   // You can use up to 16 timer for each ISR_Timer
   for (int i = 0; i < NUMBER_ISR_TIMERS; i++)
   {
-    ISR_Timer.setInterval(TimerInterval[i], irqCallbackFunc[i]); 
+#if USE_COMPLEX_STRUCT
+    curISRTimerData[i].previousMillis = startMillis;
+    ISR_Timer.setInterval(curISRTimerData[i].TimerInterval, curISRTimerData[i].irqCallbackFunc);
+#else
+    previousMillis[i] = startMillis;
+    ISR_Timer.setInterval(TimerInterval[i], irqCallbackFunc[i]);
+#endif    
   }
 
   // You need this timer for non-critical tasks. Avoid abusing ISR if not absolutely necessary.
@@ -868,13 +801,14 @@ void loop()
 
 ### Debug Terminal Output Samples
 
-1. The following is the sample terminal output when running example [ISR_Timer_Complex](examples/ISR_Timer_Complex) on **STM32F7 Nucleo-144 F767ZI using Built-in LAN8742A Ethernet and STM32Ethernet Library** to demonstrate the accuracy of ISR Hardware Timer, **especially when system is very busy**.  The ISR timer is **programmed for 2s, is activated exactly after 2.000s !!!**
+1. The following is the sample terminal output when running example [ISR_Timer_Complex](examples/ISR_Timer_Complex) on **STM32F7 Nucleo-144 NUCLEO_F767ZI using Built-in LAN8742A Ethernet and STM32Ethernet Library** to demonstrate the accuracy of ISR Hardware Timer, **especially when system is very busy**.  The ISR timer is **programmed for 2s, is activated exactly after 2.000s !!!**
 
 While software timer, **programmed for 2s, is activated after 9.782s !!!**. Then in loop(), it's also activated **every 3s**.
 
 ```
 Starting ISR_Timer_Complex on NUCLEO_F767ZI
-Version : 1.0.1
+STM32_TimerInterrupt v1.1.1
+CPU Frequency = 216 MHz
 STM32TimerInterrupt: Timer Input Freq (Hz) = 216000000, _fre = 1000000.00, _count = 50000
 Starting  ITimer OK, millis() = 6
 [9] MAC:FE-E1-88-EC-DD-95
@@ -927,12 +861,13 @@ blynkDoingSomething2s: Delta programmed ms = 2000, actual = 3000
 
 ---
 
-2. The following is the sample terminal output when running example [**TimerInterruptTest**](examples/TimerInterruptTest) on **STM32F7 Nucleo-144 F767ZI** to demonstrate how to start/stop Hardware Timers.
+2. The following is the sample terminal output when running example [**TimerInterruptTest**](examples/TimerInterruptTest) on **STM32F7 Nucleo-144 NUCLEO_F767ZI** to demonstrate how to start/stop Hardware Timers.
 
 ```
 
 Starting TimerInterruptTest on NUCLEO_F767ZI
-Version : 1.0.1
+STM32_TimerInterrupt v1.1.1
+CPU Frequency = 216 MHz
 STM32TimerInterrupt: Timer Input Freq (Hz) = 216000000, _fre = 1000000.00, _count = 1000000
 Starting  ITimer0 OK, millis() = 108
 STM32TimerInterrupt: Timer Input Freq (Hz) = 108000000, _fre = 1000000.00, _count = 3000000
@@ -979,11 +914,12 @@ Start ITimer0, millis() = 140028
 
 ---
 
-3. The following is the sample terminal output when running example [**Argument_None**](examples/Argument_None) on **STM32G7 Nucleo-144 F767ZI** to demonstrate how to start/stop Multiple Hardware Timers.
+3. The following is the sample terminal output when running example [**Argument_None**](examples/Argument_None) on **STM32G7 Nucleo-144 NUCLEO_F767ZI** to demonstrate how to start/stop Multiple Hardware Timers.
 
 ```
 Starting Argument_None on NUCLEO_F767ZI
-Version : 1.0.1
+STM32_TimerInterrupt v1.1.1
+CPU Frequency = 216 MHz
 STM32TimerInterrupt: Timer Input Freq (Hz) = 216000000, _fre = 1000000.00, _count = 1000000
 Starting  ITimer0 OK, millis() = 106
 STM32TimerInterrupt: Timer Input Freq (Hz) = 108000000, _fre = 1000000.00, _count = 5000000
@@ -1037,8 +973,205 @@ ITimer0: millis() = 36106, delta = 1000
 ITimer0: millis() = 37106, delta = 1000
 
 ```
+
+---
+
+4. The following is the sample terminal output when running example [Change_Interval](examples/Change_Interval) on **STM32F7 Nucleo-144 NUCLEO_F767ZI** to demonstrate how to change Timer Interval on-the-fly
+
+```
+Starting Change_Interval on NUCLEO_F767ZI
+STM32_TimerInterrupt v1.1.1
+CPU Frequency = 216 MHz
+STM32TimerInterrupt: Timer Input Freq (Hz) = 216000000, _fre = 1000000.00, _count = 500000
+Starting  ITimer0 OK, millis() = 111
+STM32TimerInterrupt: Timer Input Freq (Hz) = 108000000, _fre = 1000000.00, _count = 1000000
+Starting  ITimer1 OK, millis() = 122
+Time = 10001, Timer0Count = 20, , Timer1Count = 10
+Time = 20002, Timer0Count = 40, , Timer1Count = 20
+STM32TimerInterrupt: Timer Input Freq (Hz) = 216000000, _fre = 1000000.00, _count = 1000000
+STM32TimerInterrupt: Timer Input Freq (Hz) = 108000000, _fre = 1000000.00, _count = 2000000
+Changing Interval, Timer0 = 1000,  Timer1 = 2000
+Time = 30003, Timer0Count = 50, , Timer1Count = 25
+Time = 40004, Timer0Count = 60, , Timer1Count = 30
+```
+
+---
+
+5. The following is the sample terminal output when running new example [ISR_16_Timers_Array_Complex](examples/ISR_16_Timers_Array_Complex) on **STM32F7 Nucleo-144 NUCLEO_F767ZI** to demonstrate the accuracy of ISR Hardware Timer, **especially when system is very busy or blocked**. The 16 independent ISR timers are **programmed to be activated repetitively after certain intervals, is activated exactly after that programmed interval !!!**
+
+While software timer, **programmed for 2s, is activated after 10.003s in loop()!!!**.
+
+In this example, 16 independent ISR Timers are used, yet utilized just one Hardware Timer. The Timer Intervals and Function Pointers are stored in arrays to facilitate the code modification.
+
+```
+Starting ISR_16_Timers_Array_Complex on NUCLEO_F767ZI
+STM32_TimerInterrupt v1.1.1
+CPU Frequency = 216 MHz
+STM32TimerInterrupt: Timer Input Freq (Hz) = 216000000, _fre = 1000000.00, _count = 10000
+Starting  ITimer OK, millis() = 12
+SimpleTimer : 2s, ms = 10015, Dms : 10003
+Timer : 0, programmed : 5000, actual : 5010
+Timer : 1, programmed : 10000, actual : 0
+Timer : 2, programmed : 15000, actual : 0
+Timer : 3, programmed : 20000, actual : 0
+Timer : 4, programmed : 25000, actual : 0
+Timer : 5, programmed : 30000, actual : 0
+Timer : 6, programmed : 35000, actual : 0
+Timer : 7, programmed : 40000, actual : 0
+Timer : 8, programmed : 45000, actual : 0
+Timer : 9, programmed : 50000, actual : 0
+Timer : 10, programmed : 55000, actual : 0
+Timer : 11, programmed : 60000, actual : 0
+Timer : 12, programmed : 65000, actual : 0
+Timer : 13, programmed : 70000, actual : 0
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2s, ms = 20073, Dms : 10058
+Timer : 0, programmed : 5000, actual : 5000
+Timer : 1, programmed : 10000, actual : 10000
+Timer : 2, programmed : 15000, actual : 15010
+Timer : 3, programmed : 20000, actual : 20010
+Timer : 4, programmed : 25000, actual : 0
+Timer : 5, programmed : 30000, actual : 0
+Timer : 6, programmed : 35000, actual : 0
+Timer : 7, programmed : 40000, actual : 0
+Timer : 8, programmed : 45000, actual : 0
+Timer : 9, programmed : 50000, actual : 0
+Timer : 10, programmed : 55000, actual : 0
+Timer : 11, programmed : 60000, actual : 0
+Timer : 12, programmed : 65000, actual : 0
+Timer : 13, programmed : 70000, actual : 0
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2s, ms = 30132, Dms : 10059
+Timer : 0, programmed : 5000, actual : 5000
+Timer : 1, programmed : 10000, actual : 10000
+Timer : 2, programmed : 15000, actual : 15000
+Timer : 3, programmed : 20000, actual : 20010
+Timer : 4, programmed : 25000, actual : 25010
+Timer : 5, programmed : 30000, actual : 30010
+Timer : 6, programmed : 35000, actual : 0
+Timer : 7, programmed : 40000, actual : 0
+Timer : 8, programmed : 45000, actual : 0
+Timer : 9, programmed : 50000, actual : 0
+Timer : 10, programmed : 55000, actual : 0
+Timer : 11, programmed : 60000, actual : 0
+Timer : 12, programmed : 65000, actual : 0
+Timer : 13, programmed : 70000, actual : 0
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2s, ms = 40192, Dms : 10060
+Timer : 0, programmed : 5000, actual : 5000
+Timer : 1, programmed : 10000, actual : 10000
+Timer : 2, programmed : 15000, actual : 15000
+Timer : 3, programmed : 20000, actual : 20000
+Timer : 4, programmed : 25000, actual : 25010
+Timer : 5, programmed : 30000, actual : 30010
+Timer : 6, programmed : 35000, actual : 35010
+Timer : 7, programmed : 40000, actual : 40010
+Timer : 8, programmed : 45000, actual : 0
+Timer : 9, programmed : 50000, actual : 0
+Timer : 10, programmed : 55000, actual : 0
+Timer : 11, programmed : 60000, actual : 0
+Timer : 12, programmed : 65000, actual : 0
+Timer : 13, programmed : 70000, actual : 0
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2s, ms = 50252, Dms : 10060
+Timer : 0, programmed : 5000, actual : 5000
+Timer : 1, programmed : 10000, actual : 10000
+Timer : 2, programmed : 15000, actual : 15000
+Timer : 3, programmed : 20000, actual : 20000
+Timer : 4, programmed : 25000, actual : 25000
+Timer : 5, programmed : 30000, actual : 30010
+Timer : 6, programmed : 35000, actual : 35010
+Timer : 7, programmed : 40000, actual : 40010
+Timer : 8, programmed : 45000, actual : 45010
+Timer : 9, programmed : 50000, actual : 50010
+Timer : 10, programmed : 55000, actual : 0
+Timer : 11, programmed : 60000, actual : 0
+Timer : 12, programmed : 65000, actual : 0
+Timer : 13, programmed : 70000, actual : 0
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2s, ms = 60313, Dms : 10061
+Timer : 0, programmed : 5000, actual : 5000
+Timer : 1, programmed : 10000, actual : 10000
+Timer : 2, programmed : 15000, actual : 15000
+Timer : 3, programmed : 20000, actual : 20000
+Timer : 4, programmed : 25000, actual : 25000
+Timer : 5, programmed : 30000, actual : 30000
+Timer : 6, programmed : 35000, actual : 35010
+Timer : 7, programmed : 40000, actual : 40010
+Timer : 8, programmed : 45000, actual : 45010
+Timer : 9, programmed : 50000, actual : 50010
+Timer : 10, programmed : 55000, actual : 55010
+Timer : 11, programmed : 60000, actual : 60010
+Timer : 12, programmed : 65000, actual : 0
+Timer : 13, programmed : 70000, actual : 0
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2s, ms = 70375, Dms : 10062
+Timer : 0, programmed : 5000, actual : 5000
+Timer : 1, programmed : 10000, actual : 10000
+Timer : 2, programmed : 15000, actual : 15000
+Timer : 3, programmed : 20000, actual : 20000
+Timer : 4, programmed : 25000, actual : 25000
+Timer : 5, programmed : 30000, actual : 30000
+Timer : 6, programmed : 35000, actual : 35000
+Timer : 7, programmed : 40000, actual : 40010
+Timer : 8, programmed : 45000, actual : 45010
+Timer : 9, programmed : 50000, actual : 50010
+Timer : 10, programmed : 55000, actual : 55010
+Timer : 11, programmed : 60000, actual : 60010
+Timer : 12, programmed : 65000, actual : 65010
+Timer : 13, programmed : 70000, actual : 70010
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2s, ms = 80437, Dms : 10062
+Timer : 0, programmed : 5000, actual : 4999
+Timer : 1, programmed : 10000, actual : 9999
+Timer : 2, programmed : 15000, actual : 15000
+Timer : 3, programmed : 20000, actual : 19999
+Timer : 4, programmed : 25000, actual : 25000
+Timer : 5, programmed : 30000, actual : 30000
+Timer : 6, programmed : 35000, actual : 35000
+Timer : 7, programmed : 40000, actual : 39999
+Timer : 8, programmed : 45000, actual : 45010
+Timer : 9, programmed : 50000, actual : 50010
+Timer : 10, programmed : 55000, actual : 55010
+Timer : 11, programmed : 60000, actual : 60010
+Timer : 12, programmed : 65000, actual : 65010
+Timer : 13, programmed : 70000, actual : 70010
+Timer : 14, programmed : 75000, actual : 75010
+Timer : 15, programmed : 80000, actual : 80009
+SimpleTimer : 2s, ms = 90500, Dms : 10063
+Timer : 0, programmed : 5000, actual : 5000
+Timer : 1, programmed : 10000, actual : 10000
+Timer : 2, programmed : 15000, actual : 14999
+Timer : 3, programmed : 20000, actual : 19999
+Timer : 4, programmed : 25000, actual : 25000
+Timer : 5, programmed : 30000, actual : 29999
+Timer : 6, programmed : 35000, actual : 35000
+Timer : 7, programmed : 40000, actual : 39999
+Timer : 8, programmed : 45000, actual : 44999
+Timer : 9, programmed : 50000, actual : 50010
+Timer : 10, programmed : 55000, actual : 55010
+Timer : 11, programmed : 60000, actual : 60010
+Timer : 12, programmed : 65000, actual : 65010
+Timer : 13, programmed : 70000, actual : 70010
+Timer : 14, programmed : 75000, actual : 75010
+Timer : 15, programmed : 80000, actual : 80009
+```
+
 ---
 ---
+
+### Releases v1.1.1
+
+1. Add example [**Change_Interval**](examples/Change_Interval) and [**ISR_16_Timers_Array_Complex**](examples/ISR_16_Timers_Array_Complex)
+2. Bump up version to sync with other TimerInterrupt Libraries. Modify Version String.
+
 
 ### Releases v1.0.1
 

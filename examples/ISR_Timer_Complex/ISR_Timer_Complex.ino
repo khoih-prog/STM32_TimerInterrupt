@@ -19,12 +19,13 @@
    Based on BlynkTimer.h
    Author: Volodymyr Shymanskyy
 
-   Version: 1.0.1
+   Version: 1.1.1
 
    Version Modified By   Date      Comments
    ------- -----------  ---------- -----------
     1.0.0   K Hoang      30/10/2020 Initial coding
     1.0.1   K Hoang      06/11/2020 Add complicated example ISR_16_Timers_Array using all 16 independent ISR Timers.
+    1.1.1   K.Hoang      06/12/2020 Add complex examples. Bump up version to sync with other TimerInterrupt Libraries
 *****************************************************************************************************************************/
 /*
    Notes:
@@ -268,7 +269,8 @@ void setup()
   while (!Serial);
   
   Serial.println("\nStarting ISR_Timer_Complex on " + String(BOARD_NAME));
-  Serial.println("Version : " + String(STM32_TIMER_INTERRUPT_VERSION));
+  Serial.println(STM32_TIMER_INTERRUPT_VERSION);
+  Serial.println("CPU Frequency = " + String(F_CPU / 1000000) + " MHz");
 
   // You need this timer for non-critical tasks. Avoid abusing ISR if not absolutely necessary.
   blynkTimer.setInterval(BLYNK_TIMER_MS, blynkDoingSomething2s);
