@@ -36,12 +36,15 @@
   * [7. For fixing ESP32 compile error](#7-for-fixing-esp32-compile-error)
   * [8. For STM32 core F3 and F4 using UIPEthernet library](#8-for-stm32-core-f3-and-f4-using-uipethernet-library)
 * [HOWTO Fix `Multiple Definitions` Linker Error](#howto-fix-multiple-definitions-linker-error)
-* [HOWTO Use PWM analogWrite() with ESP8266 running Timer1 Interrupt](#howto-use-pwm-analogwrite-with-esp8266-running-timer1-interrupt)
-  * [1. ESP8266 has only 2 hardware timers, named Timer0 and Timer1](#1-esp8266-has-only-2-hardware-timers-named-timer0-and-timer1)
-  * [2. ESP8266 hardware timers' functions](#2-esp8266-hardware-timers-functions)
-  * [3. How to use PWM analogWrite() functions while using this library](#3-how-to-use-pwm-analogwrite-functions-while-using-this-library)
 * [More useful Information about STM32 Timers](#more-useful-information-about-stm32-timers)
 * [New from v1.0.0](#new-from-v100)
+* [Usage](#usage)
+  * [1. Using only Hardware Timer directly](#1-using-only-hardware-timer-directly)
+    * [1.1 Init Hardware Timer](#11-init-hardware-timer)
+    * [1.2 Set Hardware Timer Interval and attach Timer Interrupt Handler function](#12-set-hardware-timer-interval-and-attach-timer-interrupt-handler-function)
+  * [2. Using 16 ISR_based Timers from 1 Hardware Timer](#2-using-16-isr_based-timers-from-1-hardware-timer)
+    * [2.1 Init Hardware Timer and ISR-based Timer](#21-init-hardware-timer-and-isr-based-timer)
+    * [2.2 Set Hardware Timer Interval and attach Timer Interrupt Handler functions](#22-set-hardware-timer-interval-and-attach-timer-interrupt-handler-functions)
 * [Examples](#examples)
   * [  1. Argument_None](examples/Argument_None)
   * [  2. ISR_16_Timers_Array](examples/ISR_16_Timers_Array)
@@ -156,6 +159,7 @@ The catch is **your function is now part of an ISR (Interrupt Service Routine), 
 
 1. Add better debug feature.
 2. Optimize code and examples to reduce RAM usage
+3. Add Table of Contents
 
 ### Releases v1.1.1
 
@@ -475,7 +479,7 @@ void setup()
 }  
 ```
 
-### 2. Using 16 ISR_based Timers from 1 Hardware Timers
+### 2. Using 16 ISR_based Timers from 1 Hardware Timer
 
 
 #### 2.1 Init Hardware Timer and ISR-based Timer
@@ -918,9 +922,10 @@ While software timer, **programmed for 2s, is activated after 9.782s !!!**. Then
 
 ```
 Starting ISR_Timer_Complex on NUCLEO_F767ZI
-STM32_TimerInterrupt v1.1.1
+STM32_TimerInterrupt v1.2.0
 CPU Frequency = 216 MHz
-STM32TimerInterrupt: Timer Input Freq (Hz) = 216000000, _fre = 1000000.00, _count = 50000
+[TISR] STM32TimerInterrupt: Timer Input Freq (Hz) = 216000000
+[TISR] Frequency = 1000000.00 , _count = 50000
 Starting  ITimer OK, millis() = 6
 [9] MAC:FE-E1-88-EC-DD-95
 2s: Delta ms = 2000
@@ -979,11 +984,13 @@ The following is the sample terminal output when running example [**TimerInterru
 ```
 
 Starting TimerInterruptTest on NUCLEO_F767ZI
-STM32_TimerInterrupt v1.1.1
+STM32_TimerInterrupt v1.2.0
 CPU Frequency = 216 MHz
-STM32TimerInterrupt: Timer Input Freq (Hz) = 216000000, _fre = 1000000.00, _count = 1000000
+[TISR] STM32TimerInterrupt: Timer Input Freq (Hz) = 216000000
+[TISR] Frequency = 1000000.00 , _count = 1000000
 Starting  ITimer0 OK, millis() = 108
-STM32TimerInterrupt: Timer Input Freq (Hz) = 108000000, _fre = 1000000.00, _count = 3000000
+[TISR] STM32TimerInterrupt: Timer Input Freq (Hz) = 108000000
+[TISR] Frequency = 1000000.00 , _count = 3000000
 Starting  ITimer1 OK, millis() = 119
 Stop ITimer0, millis() = 5001
 Start ITimer0, millis() = 10002
@@ -1033,13 +1040,16 @@ The following is the sample terminal output when running example [**Argument_Non
 
 ```
 Starting Argument_None on NUCLEO_F767ZI
-STM32_TimerInterrupt v1.1.1
+STM32_TimerInterrupt v1.2.0
 CPU Frequency = 216 MHz
-STM32TimerInterrupt: Timer Input Freq (Hz) = 216000000, _fre = 1000000.00, _count = 1000000
+[TISR] STM32TimerInterrupt: Timer Input Freq (Hz) = 216000000
+[TISR] Frequency = 1000000.00 , _count = 1000000
 Starting  ITimer0 OK, millis() = 106
-STM32TimerInterrupt: Timer Input Freq (Hz) = 108000000, _fre = 1000000.00, _count = 5000000
+[TISR] STM32TimerInterrupt: Timer Input Freq (Hz) = 108000000
+[TISR] Frequency = 1000000.00 , _count = 5000000
 Starting  ITimer1 OK, millis() = 117
-STM32TimerInterrupt: Timer Input Freq (Hz) = 108000000, _fre = 1000000.00, _count = 20000000
+[TISR] STM32TimerInterrupt: Timer Input Freq (Hz) = 108000000
+[TISR] Frequency = 1000000.00 , _count = 20000000
 Starting  ITimer2 OK, millis() = 129
 ITimer0: millis() = 1106, delta = 1000
 ITimer0: millis() = 2106, delta = 1000
@@ -1097,16 +1107,20 @@ The following is the sample terminal output when running example [Change_Interva
 
 ```
 Starting Change_Interval on NUCLEO_F767ZI
-STM32_TimerInterrupt v1.1.1
+STM32_TimerInterrupt v1.2.0
 CPU Frequency = 216 MHz
-STM32TimerInterrupt: Timer Input Freq (Hz) = 216000000, _fre = 1000000.00, _count = 500000
+[TISR] STM32TimerInterrupt: Timer Input Freq (Hz) = 216000000
+[TISR] Frequency = 1000000.00 , _count = 500000
 Starting  ITimer0 OK, millis() = 111
-STM32TimerInterrupt: Timer Input Freq (Hz) = 108000000, _fre = 1000000.00, _count = 1000000
+[TISR] STM32TimerInterrupt: Timer Input Freq (Hz) = 216000000
+[TISR] Frequency = 1000000.00 , _count = 1000000
 Starting  ITimer1 OK, millis() = 122
 Time = 10001, Timer0Count = 20, , Timer1Count = 10
 Time = 20002, Timer0Count = 40, , Timer1Count = 20
-STM32TimerInterrupt: Timer Input Freq (Hz) = 216000000, _fre = 1000000.00, _count = 1000000
-STM32TimerInterrupt: Timer Input Freq (Hz) = 108000000, _fre = 1000000.00, _count = 2000000
+[TISR] STM32TimerInterrupt: Timer Input Freq (Hz) = 216000000
+[TISR] Frequency = 1000000.00 , _count = 1000000
+[TISR] STM32TimerInterrupt: Timer Input Freq (Hz) = 108000000
+[TISR] Frequency = 1000000.00 , _count = 2000000
 Changing Interval, Timer0 = 1000,  Timer1 = 2000
 Time = 30003, Timer0Count = 50, , Timer1Count = 25
 Time = 40004, Timer0Count = 60, , Timer1Count = 30
@@ -1124,9 +1138,10 @@ In this example, 16 independent ISR Timers are used, yet utilized just one Hardw
 
 ```
 Starting ISR_16_Timers_Array_Complex on NUCLEO_F767ZI
-STM32_TimerInterrupt v1.1.1
+STM32_TimerInterrupt v1.2.0
 CPU Frequency = 216 MHz
-STM32TimerInterrupt: Timer Input Freq (Hz) = 216000000, _fre = 1000000.00, _count = 10000
+[TISR] STM32TimerInterrupt: Timer Input Freq (Hz) = 216000000
+[TISR] Frequency = 1000000.00 , _count = 10000
 Starting  ITimer OK, millis() = 12
 SimpleTimer : 2s, ms = 10015, Dms : 10003
 Timer : 0, programmed : 5000, actual : 5010
@@ -1317,6 +1332,7 @@ Sometimes, the library will only work if you update the board core to the latest
 
 1. Add better debug feature.
 2. Optimize code and examples to reduce RAM usage
+3. Add Table of Contents
 
 ### Releases v1.1.1
 
@@ -1379,6 +1395,7 @@ Submit issues to: [STM32_TimerInterrupt issues](https://github.com/khoih-prog/ST
 2. More hardware-initiated software-enabled timers
 3. Longer time interval
 4. Similar features for remaining Arduino boards such as ESP32, ESP8266, SAMD21, SAMD51, nRF52, mbed-nRF52, Teensy, etc.
+5. Add Table of Contents
 
 ---
 ---
