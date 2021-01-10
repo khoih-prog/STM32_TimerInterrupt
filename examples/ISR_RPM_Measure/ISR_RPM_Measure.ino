@@ -1,31 +1,32 @@
 /****************************************************************************************************************************
-   ISR_RPM_Measure.ino
-   For STM32 boards
-   Written by Khoi Hoang
-
-   Built by Khoi Hoang https://github.com/khoih-prog/STM32_TimerInterrupt
-   Licensed under MIT license
-
-   Now even you use all these new 16 ISR-based timers,with their maximum interval practically unlimited (limited only by
-   unsigned long miliseconds), you just consume only one STM32 timer and avoid conflicting with other cores' tasks.
-   The accuracy is nearly perfect compared to software timers. The most important feature is they're ISR-based timers
-   Therefore, their executions are not blocked by bad-behaving functions / tasks.
-   This important feature is absolutely necessary for mission-critical tasks.
-
-   Based on SimpleTimer - A timer library for Arduino.
-   Author: mromani@ottotecnica.com
-   Copyright (c) 2010 OTTOTECNICA Italy
-
-   Based on BlynkTimer.h
-   Author: Volodymyr Shymanskyy
-
-   Version: 1.1.1
-
-   Version Modified By   Date      Comments
-   ------- -----------  ---------- -----------
-    1.0.0   K Hoang      30/10/2020 Initial coding
-    1.0.1   K Hoang      06/11/2020 Add complicated example ISR_16_Timers_Array using all 16 independent ISR Timers.
-    1.1.1   K.Hoang      06/12/2020 Add complex examples. Bump up version to sync with other TimerInterrupt Libraries
+  ISR_RPM_Measure.ino
+  For STM32 boards
+  Written by Khoi Hoang
+  
+  Built by Khoi Hoang https://github.com/khoih-prog/STM32_TimerInterrupt
+  Licensed under MIT license
+  
+  Now even you use all these new 16 ISR-based timers,with their maximum interval practically unlimited (limited only by
+  unsigned long miliseconds), you just consume only one STM32 timer and avoid conflicting with other cores' tasks.
+  The accuracy is nearly perfect compared to software timers. The most important feature is they're ISR-based timers
+  Therefore, their executions are not blocked by bad-behaving functions / tasks.
+  This important feature is absolutely necessary for mission-critical tasks.
+  
+  Based on SimpleTimer - A timer library for Arduino.
+  Author: mromani@ottotecnica.com
+  Copyright (c) 2010 OTTOTECNICA Italy
+  
+  Based on BlynkTimer.h
+  Author: Volodymyr Shymanskyy
+  
+  Version: 1.2.0
+  
+  Version Modified By   Date      Comments
+  ------- -----------  ---------- -----------
+  1.0.0   K Hoang      30/10/2020 Initial coding
+  1.0.1   K Hoang      06/11/2020 Add complicated example ISR_16_Timers_Array using all 16 independent ISR Timers.
+  1.1.1   K.Hoang      06/12/2020 Add complex examples. Bump up version to sync with other TimerInterrupt Libraries
+  1.2.0   K.Hoang      08/01/2021 Add better debug feature. Optimize code and examples to reduce RAM usage
 *****************************************************************************************************************************/
 /*
    Notes:
@@ -56,8 +57,11 @@
 #endif
 
 // These define's must be placed at the beginning before #include "STM32TimerInterrupt.h"
-// Don't define STM32_STM32_TIMER_INTERRUPT_DEBUG > 2. Only for special ISR debugging only. Can hang the system.
-#define STM32_TIMER_INTERRUPT_DEBUG      1
+// _TIMERINTERRUPT_LOGLEVEL_ from 0 to 4
+// Don't define _TIMERINTERRUPT_LOGLEVEL_ > 0. Only for special ISR debugging only. Can hang the system.
+// Don't define TIMER_INTERRUPT_DEBUG > 2. Only for special ISR debugging only. Can hang the system.
+#define TIMER_INTERRUPT_DEBUG         0
+#define _TIMERINTERRUPT_LOGLEVEL_     0
 
 #include "STM32TimerInterrupt.h"
 
@@ -118,7 +122,10 @@ void TimerHandler1()
 
       avgRPM = ( 2 * avgRPM + RPM) / 3,
 
-      Serial.println("RPM = " + String(avgRPM) + ", rotationTime ms = " + String(rotationTime * TIMER1_INTERVAL_MS) );
+#if (TIMER_INTERRUPT_DEBUG > 1)
+      Serial.print("RPM = "); Serial.print(avgRPM);
+      Serial.print(", rotationTime ms = "); Serial.println(rotationTime * TIMER1_INTERVAL_MS);
+#endif
 
       rotationTime = 0;
       debounceCounter = 0;
@@ -135,7 +142,11 @@ void TimerHandler1()
   {
     // If idle, set RPM to 0, don't increase rotationTime
     RPM = 0;
-    Serial.println("RPM = " + String(RPM) + ", rotationTime = " + String(rotationTime) );
+
+#if (TIMER_INTERRUPT_DEBUG > 1)   
+    Serial.print("RPM = "); Serial.print(RPM); Serial.print(", rotationTime = "); Serial.println(rotationTime);
+#endif
+    
     rotationTime = 0;
   }
   else
@@ -150,16 +161,20 @@ void setup()
   
   Serial.begin(115200);
   while (!Serial);
-  
-  Serial.println("\nStarting ISR_RPM_Measure on " + String(BOARD_NAME));
-  Serial.println(STM32_TIMER_INTERRUPT_VERSION);
-  Serial.println("CPU Frequency = " + String(F_CPU / 1000000) + " MHz");
 
+  delay(100);
+
+  Serial.print(F("\nStarting ISR_RPM_Measure on ")); Serial.println(BOARD_NAME);
+  Serial.println(STM32_TIMER_INTERRUPT_VERSION);
+  Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
+  
   // Interval in microsecs, must multiply to 1000 here or crash
   if (ITimer1.attachInterruptInterval(TIMER1_INTERVAL_MS * 1000, TimerHandler1))
-    Serial.println("Starting  ITimer1 OK, millis() = " + String(millis()));
+  {
+    Serial.print(F("Starting ITimer1 OK, millis() = ")); Serial.println(millis());
+  }
   else
-    Serial.println("Can't set ITimer1. Select another freq., duration or timer");
+    Serial.println(F("Can't set ITimer1. Select another freq. or timer"));
 
   // Assumming the interruptPin will go LOW
   attachInterrupt(digitalPinToInterrupt(interruptPin), detectRotation, FALLING);

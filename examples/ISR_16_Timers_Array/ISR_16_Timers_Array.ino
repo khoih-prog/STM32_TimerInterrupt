@@ -1,31 +1,32 @@
 /****************************************************************************************************************************
-   ISR_16_Timers_Array.ino
-   For STM32 boards
-   Written by Khoi Hoang
-
-   Built by Khoi Hoang https://github.com/khoih-prog/STM32_TimerInterrupt
-   Licensed under MIT license
-
-   Now even you use all these new 16 ISR-based timers,with their maximum interval practically unlimited (limited only by
-   unsigned long miliseconds), you just consume only one STM32 timer and avoid conflicting with other cores' tasks.
-   The accuracy is nearly perfect compared to software timers. The most important feature is they're ISR-based timers
-   Therefore, their executions are not blocked by bad-behaving functions / tasks.
-   This important feature is absolutely necessary for mission-critical tasks.
-
-   Based on SimpleTimer - A timer library for Arduino.
-   Author: mromani@ottotecnica.com
-   Copyright (c) 2010 OTTOTECNICA Italy
-
-   Based on BlynkTimer.h
-   Author: Volodymyr Shymanskyy
-
-   Version: 1.1.1
-
-   Version Modified By   Date      Comments
-   ------- -----------  ---------- -----------
-    1.0.0   K Hoang      30/10/2020 Initial coding
-    1.0.1   K Hoang      06/11/2020 Add complicated example ISR_16_Timers_Array using all 16 independent ISR Timers.
-    1.1.1   K.Hoang      06/12/2020 Add complex examples. Bump up version to sync with other TimerInterrupt Libraries
+  ISR_16_Timers_Array.ino
+  For STM32 boards
+  Written by Khoi Hoang
+  
+  Built by Khoi Hoang https://github.com/khoih-prog/STM32_TimerInterrupt
+  Licensed under MIT license
+  
+  Now even you use all these new 16 ISR-based timers,with their maximum interval practically unlimited (limited only by
+  unsigned long miliseconds), you just consume only one STM32 timer and avoid conflicting with other cores' tasks.
+  The accuracy is nearly perfect compared to software timers. The most important feature is they're ISR-based timers
+  Therefore, their executions are not blocked by bad-behaving functions / tasks.
+  This important feature is absolutely necessary for mission-critical tasks.
+  
+  Based on SimpleTimer - A timer library for Arduino.
+  Author: mromani@ottotecnica.com
+  Copyright (c) 2010 OTTOTECNICA Italy
+  
+  Based on BlynkTimer.h
+  Author: Volodymyr Shymanskyy
+  
+  Version: 1.2.0
+  
+  Version Modified By   Date      Comments
+  ------- -----------  ---------- -----------
+  1.0.0   K Hoang      30/10/2020 Initial coding
+  1.0.1   K Hoang      06/11/2020 Add complicated example ISR_16_Timers_Array using all 16 independent ISR Timers.
+  1.1.1   K.Hoang      06/12/2020 Add complex examples. Bump up version to sync with other TimerInterrupt Libraries
+  1.2.0   K.Hoang      08/01/2021 Add better debug feature. Optimize code and examples to reduce RAM usage
 *****************************************************************************************************************************/
 /*
    Notes:
@@ -63,8 +64,11 @@
 #endif
 
 // These define's must be placed at the beginning before #include "STM32TimerInterrupt.h"
-// Don't define STM32_TIMER_INTERRUPT_DEBUG > 2. Only for special ISR debugging only. Can hang the system.
-#define STM32_TIMER_INTERRUPT_DEBUG      1
+// _TIMERINTERRUPT_LOGLEVEL_ from 0 to 4
+// Don't define _TIMERINTERRUPT_LOGLEVEL_ > 0. Only for special ISR debugging only. Can hang the system.
+// Don't define TIMER_INTERRUPT_DEBUG > 2. Only for special ISR debugging only. Can hang the system.
+#define TIMER_INTERRUPT_DEBUG         0
+#define _TIMERINTERRUPT_LOGLEVEL_     0
 
 #include "STM32TimerInterrupt.h"
 #include "STM32_ISR_Timer.h"
@@ -101,7 +105,7 @@ STM32_ISR_Timer ISR_Timer;
 
 #define LED_TOGGLE_INTERVAL_MS        2000L
 
-void TimerHandler(void)
+void TimerHandler()
 {
   static bool toggle  = false;
   static bool started = false;
@@ -135,16 +139,13 @@ uint32_t TimerInterval[NUMBER_ISR_TIMERS] =
   9000L, 10000L, 11000L, 12000L, 13000L, 14000L, 15000L, 16000L
 };
 
-typedef void (*irqCallback)  (void);
+typedef void (*irqCallback)  ();
 
-#if (STM32_TIMER_INTERRUPT_DEBUG > 0)
+#if (TIMER_INTERRUPT_DEBUG > 0)
 void printStatus(uint16_t index, unsigned long deltaMillis, unsigned long currentMillis)
 {
-  Serial.print(TimerInterval[index]/1000);
-  Serial.print("s: Delta ms = ");
-  Serial.print(deltaMillis);
-  Serial.print(", ms = ");
-  Serial.println(currentMillis);
+  Serial.print(TimerInterval[index]/1000); Serial.print("s: Delta ms = "); Serial.print(deltaMillis);
+  Serial.print(", ms = "); Serial.println(currentMillis);
 }
 #endif
 
@@ -153,232 +154,226 @@ void printStatus(uint16_t index, unsigned long deltaMillis, unsigned long curren
 // Or you can get this run-time error / crash
 void doingSomething0()
 {
+#if (TIMER_INTERRUPT_DEBUG > 0)
   static unsigned long previousMillis = startMillis;
   
   unsigned long currentMillis = millis();
   unsigned long deltaMillis   = currentMillis - previousMillis;
-
-#if (STM32_TIMER_INTERRUPT_DEBUG > 0)
+  
   printStatus(0, deltaMillis, currentMillis);
-#endif
 
   previousMillis = currentMillis;
+#endif
 }
 
 void doingSomething1()
 {
+#if (TIMER_INTERRUPT_DEBUG > 1)
   static unsigned long previousMillis = startMillis;
   
   unsigned long currentMillis = millis();
   unsigned long deltaMillis   = currentMillis - previousMillis;
-
-#if (STM32_TIMER_INTERRUPT_DEBUG > 0)
+  
   printStatus(1, deltaMillis, currentMillis);
-#endif
 
   previousMillis = currentMillis;
+#endif
 }
 
 void doingSomething2()
 {
+#if (TIMER_INTERRUPT_DEBUG > 1)
   static unsigned long previousMillis = startMillis;
   
   unsigned long currentMillis = millis();
   unsigned long deltaMillis   = currentMillis - previousMillis;
-
-#if (STM32_TIMER_INTERRUPT_DEBUG > 0)
+  
   printStatus(2, deltaMillis, currentMillis);
-#endif
 
   previousMillis = currentMillis;
+#endif
 }
 
 void doingSomething3()
 {
+#if (TIMER_INTERRUPT_DEBUG > 1)
   static unsigned long previousMillis = startMillis;
   
   unsigned long currentMillis = millis();
   unsigned long deltaMillis   = currentMillis - previousMillis;
-
-#if (STM32_TIMER_INTERRUPT_DEBUG > 0)
+  
   printStatus(3, deltaMillis, currentMillis);
-#endif
 
   previousMillis = currentMillis;
+#endif
 }
 
 void doingSomething4()
 {
+#if (TIMER_INTERRUPT_DEBUG > 1)
   static unsigned long previousMillis = startMillis;
   
   unsigned long currentMillis = millis();
   unsigned long deltaMillis   = currentMillis - previousMillis;
-
-#if (STM32_TIMER_INTERRUPT_DEBUG > 0)
+  
   printStatus(4, deltaMillis, currentMillis);
-#endif
 
   previousMillis = currentMillis;
+#endif
 }
 
 void doingSomething5()
 {
+#if (TIMER_INTERRUPT_DEBUG > 1)
   static unsigned long previousMillis = startMillis;
   
   unsigned long currentMillis = millis();
   unsigned long deltaMillis   = currentMillis - previousMillis;
-
-#if (STM32_TIMER_INTERRUPT_DEBUG > 0)
+  
   printStatus(5, deltaMillis, currentMillis);
-#endif
 
   previousMillis = currentMillis;
+#endif
 }
 
 void doingSomething6()
 {
+#if (TIMER_INTERRUPT_DEBUG > 1)
   static unsigned long previousMillis = startMillis;
   
   unsigned long currentMillis = millis();
   unsigned long deltaMillis   = currentMillis - previousMillis;
-
-#if (STM32_TIMER_INTERRUPT_DEBUG > 0)
+  
   printStatus(6, deltaMillis, currentMillis);
-#endif
 
   previousMillis = currentMillis;
+#endif
 }
 
 void doingSomething7()
 {
+#if (TIMER_INTERRUPT_DEBUG > 1)
   static unsigned long previousMillis = startMillis;
   
   unsigned long currentMillis = millis();
   unsigned long deltaMillis   = currentMillis - previousMillis;
-
-#if (STM32_TIMER_INTERRUPT_DEBUG > 0)
+  
   printStatus(7, deltaMillis, currentMillis);
-#endif
 
   previousMillis = currentMillis;
+#endif
 }
 
 void doingSomething8()
 {
+#if (TIMER_INTERRUPT_DEBUG > 1)
   static unsigned long previousMillis = startMillis;
   
   unsigned long currentMillis = millis();
   unsigned long deltaMillis   = currentMillis - previousMillis;
-
-#if (STM32_TIMER_INTERRUPT_DEBUG > 0)
+  
   printStatus(8, deltaMillis, currentMillis);
-#endif
 
   previousMillis = currentMillis;
+#endif
 }
 
 void doingSomething9()
 {
+#if (TIMER_INTERRUPT_DEBUG > 1)
   static unsigned long previousMillis = startMillis;
   
   unsigned long currentMillis = millis();
   unsigned long deltaMillis   = currentMillis - previousMillis;
-
-#if (STM32_TIMER_INTERRUPT_DEBUG > 0)
+  
   printStatus(9, deltaMillis, currentMillis);
-#endif
 
   previousMillis = currentMillis;
+#endif
 }
 
 void doingSomething10()
 {
+#if (TIMER_INTERRUPT_DEBUG > 1)
   static unsigned long previousMillis = startMillis;
   
   unsigned long currentMillis = millis();
   unsigned long deltaMillis   = currentMillis - previousMillis;
-
-#if (STM32_TIMER_INTERRUPT_DEBUG > 0)
+  
   printStatus(10, deltaMillis, currentMillis);
-#endif
 
   previousMillis = currentMillis;
+#endif
 }
 
-// In STM32, avoid doing something fancy in ISR, for example complex Serial.print with String() argument
-// The pure simple Serial.prints here are just for demonstration and testing. Must be eliminate in working environment
-// Or you can get this run-time error / crash
 void doingSomething11()
 {
+#if (TIMER_INTERRUPT_DEBUG > 1)
   static unsigned long previousMillis = startMillis;
   
   unsigned long currentMillis = millis();
   unsigned long deltaMillis   = currentMillis - previousMillis;
-
-#if (STM32_TIMER_INTERRUPT_DEBUG > 0)
+  
   printStatus(11, deltaMillis, currentMillis);
-#endif
 
   previousMillis = currentMillis;
+#endif
 }
 
-// In STM32, avoid doing something fancy in ISR, for example complex Serial.print with String() argument
-// The pure simple Serial.prints here are just for demonstration and testing. Must be eliminate in working environment
-// Or you can get this run-time error / crash
 void doingSomething12()
 {
+#if (TIMER_INTERRUPT_DEBUG > 1)
   static unsigned long previousMillis = startMillis;
   
   unsigned long currentMillis = millis();
   unsigned long deltaMillis   = currentMillis - previousMillis;
-
-#if (STM32_TIMER_INTERRUPT_DEBUG > 0)
+  
   printStatus(12, deltaMillis, currentMillis);
-#endif
 
   previousMillis = currentMillis;
+#endif
 }
 
 void doingSomething13()
 {
+#if (TIMER_INTERRUPT_DEBUG > 1)
   static unsigned long previousMillis = startMillis;
   
   unsigned long currentMillis = millis();
   unsigned long deltaMillis   = currentMillis - previousMillis;
-
-#if (STM32_TIMER_INTERRUPT_DEBUG > 0)
+  
   printStatus(13, deltaMillis, currentMillis);
-#endif
 
   previousMillis = currentMillis;
+#endif
 }
 
 void doingSomething14()
 {
+#if (TIMER_INTERRUPT_DEBUG > 1)
   static unsigned long previousMillis = startMillis;
   
   unsigned long currentMillis = millis();
   unsigned long deltaMillis   = currentMillis - previousMillis;
-
-#if (STM32_TIMER_INTERRUPT_DEBUG > 0)
+  
   printStatus(14, deltaMillis, currentMillis);
-#endif
 
   previousMillis = currentMillis;
+#endif
 }
 
 void doingSomething15()
 {
+#if (TIMER_INTERRUPT_DEBUG > 1)
   static unsigned long previousMillis = startMillis;
   
   unsigned long currentMillis = millis();
   unsigned long deltaMillis   = currentMillis - previousMillis;
-
-#if (STM32_TIMER_INTERRUPT_DEBUG > 0)
+  
   printStatus(15, deltaMillis, currentMillis);
-#endif
 
   previousMillis = currentMillis;
+#endif
 }
 
 irqCallback irqCallbackFunc[NUMBER_ISR_TIMERS] =
@@ -404,7 +399,10 @@ SimpleTimer simpleTimer;
 void simpleTimerDoingSomething2s()
 {
   static unsigned long previousMillis = startMillis;
-  Serial.println("simpleTimerDoingSomething2s: Delta programmed ms = " + String(SIMPLE_TIMER_MS) + ", actual = " + String(millis() - previousMillis));
+
+  Serial.print(F("simpleTimerDoingSomething2s: Delta programmed ms = ")); Serial.print(SIMPLE_TIMER_MS);
+  Serial.print(F(", actual = ")); Serial.println(millis() - previousMillis);
+  
   previousMillis = millis();
 }
 
@@ -412,23 +410,25 @@ void setup()
 {
   Serial.begin(115200);
   while (!Serial);
-  
-  Serial.println("\nStarting ISR_16_Timers_Array on " + String(BOARD_NAME));
-  Serial.println(STM32_TIMER_INTERRUPT_VERSION);
-  Serial.println("CPU Frequency = " + String(F_CPU / 1000000) + " MHz");
 
+  delay(100);
+
+  Serial.print(F("\nStarting ISR_16_Timers_Array on ")); Serial.println(BOARD_NAME);
+  Serial.println(STM32_TIMER_INTERRUPT_VERSION);
+  Serial.print(F("CPU Frequency = ")); Serial.print(F_CPU / 1000000); Serial.println(F(" MHz"));
+  
   // Interval in microsecs
   if (ITimer.attachInterruptInterval(HW_TIMER_INTERVAL_US, TimerHandler))
   {
     startMillis = millis();
-    Serial.println("Starting  ITimer OK, millis() = " + String(startMillis));
+    Serial.print(F("Starting ITimer OK, millis() = ")); Serial.println(startMillis);
   }
   else
-    Serial.println("Can't set ITimer correctly. Select another freq. or interval");
+    Serial.println(F("Can't set ITimer correctly. Select another freq. or interval"));
 
   // Just to demonstrate, don't use too many ISR Timers if not absolutely necessary
-  // You can use up to 16 timer for each ISR_Timer
-  for (int i = 0; i < NUMBER_ISR_TIMERS; i++)
+  // You can use up to 16 timer for each STM32_ISR_Timer
+  for (uint16_t i = 0; i < NUMBER_ISR_TIMERS; i++)
   {
     ISR_Timer.setInterval(TimerInterval[i], irqCallbackFunc[i]); 
   }
