@@ -63,6 +63,7 @@
   * [3. Argument_None on STM32F7 Nucleo-144 NUCLEO_F767ZI](#3-argument_none-on-stm32f7-nucleo-144-nucleo_f767zi)
   * [4. Change_Interval on STM32F7 Nucleo-144 NUCLEO_F767ZI](#4-change_interval-on-stm32f7-nucleo-144-nucleo_f767zi)
   * [5. ISR_16_Timers_Array_Complex on STM32F7 Nucleo-144 NUCLEO_F767ZI](#5-isr_16_timers_array_complex-on-stm32f7-nucleo-144-nucleo_f767zi)
+  * [6. ISR_16_Timers_Array_Complex on STM32F1 BLUEPILL_F103C8](#6-isr_16_timers_array_complex-on-stm32f1-bluepill_f103c8)
 * [Debug](#debug)
 * [Troubleshooting](#troubleshooting)
 * [Releases](#releases)
@@ -1301,6 +1302,160 @@ Timer : 13, programmed : 70000, actual : 70010
 Timer : 14, programmed : 75000, actual : 75010
 Timer : 15, programmed : 80000, actual : 80009
 ```
+
+---
+
+### 6. ISR_16_Timers_Array_Complex on STM32F1 BLUEPILL_F103C8
+
+The following is the sample terminal output when running new example [ISR_16_Timers_Array_Complex](examples/ISR_16_Timers_Array_Complex) on **STM32F1  BLUEPILL_F103C8** to demonstrate the accuracy of ISR Hardware Timer, **especially when system is very busy or blocked**. The 16 independent ISR timers are **programmed to be activated repetitively after certain intervals, is activated exactly after that programmed interval !!!**
+
+While software timer, **programmed for 2s, is activated after 10.000s in loop()!!!**.
+
+In this example, 16 independent ISR Timers are used, yet utilized just one Hardware Timer. The Timer Intervals and Function Pointers are stored in arrays to facilitate the code modification.
+
+```
+Starting ISR_16_Timers_Array_Complex on BLUEPILL_F103C8
+STM32TimerInterrupt v1.2.0
+CPU Frequency = 72 MHz
+Starting ITimer OK, millis() = 8880
+SimpleTimer : 2, ms : 18880, Dms : 10000
+Timer : 0, programmed : 5000, actual : 5001
+Timer : 1, programmed : 10000, actual : 0
+Timer : 2, programmed : 15000, actual : 0
+Timer : 3, programmed : 20000, actual : 0
+Timer : 4, programmed : 25000, actual : 0
+Timer : 5, programmed : 30000, actual : 0
+Timer : 6, programmed : 35000, actual : 0
+Timer : 7, programmed : 40000, actual : 0
+Timer : 8, programmed : 45000, actual : 0
+Timer : 9, programmed : 50000, actual : 0
+Timer : 10, programmed : 55000, actual : 0
+Timer : 11, programmed : 60000, actual : 0
+Timer : 12, programmed : 65000, actual : 0
+Timer : 13, programmed : 70000, actual : 0
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2, ms : 28881, Dms : 10001
+Timer : 0, programmed : 5000, actual : 5000
+Timer : 1, programmed : 10000, actual : 10000
+Timer : 2, programmed : 15000, actual : 15000
+Timer : 3, programmed : 20000, actual : 20000
+Timer : 4, programmed : 25000, actual : 0
+Timer : 5, programmed : 30000, actual : 0
+Timer : 6, programmed : 35000, actual : 0
+Timer : 7, programmed : 40000, actual : 0
+Timer : 8, programmed : 45000, actual : 0
+Timer : 9, programmed : 50000, actual : 0
+Timer : 10, programmed : 55000, actual : 0
+Timer : 11, programmed : 60000, actual : 0
+Timer : 12, programmed : 65000, actual : 0
+Timer : 13, programmed : 70000, actual : 0
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2, ms : 38882, Dms : 10001
+Timer : 0, programmed : 5000, actual : 5000
+Timer : 1, programmed : 10000, actual : 10000
+Timer : 2, programmed : 15000, actual : 15000
+Timer : 3, programmed : 20000, actual : 20000
+Timer : 4, programmed : 25000, actual : 25000
+Timer : 5, programmed : 30000, actual : 30000
+Timer : 6, programmed : 35000, actual : 0
+Timer : 7, programmed : 40000, actual : 0
+Timer : 8, programmed : 45000, actual : 0
+Timer : 9, programmed : 50000, actual : 0
+Timer : 10, programmed : 55000, actual : 0
+Timer : 11, programmed : 60000, actual : 0
+Timer : 12, programmed : 65000, actual : 0
+Timer : 13, programmed : 70000, actual : 0
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2, ms : 48883, Dms : 10001
+Timer : 0, programmed : 5000, actual : 5000
+Timer : 1, programmed : 10000, actual : 10000
+Timer : 2, programmed : 15000, actual : 15000
+Timer : 3, programmed : 20000, actual : 20000
+Timer : 4, programmed : 25000, actual : 25000
+Timer : 5, programmed : 30000, actual : 30000
+Timer : 6, programmed : 35000, actual : 35000
+Timer : 7, programmed : 40000, actual : 40000
+Timer : 8, programmed : 45000, actual : 0
+Timer : 9, programmed : 50000, actual : 0
+Timer : 10, programmed : 55000, actual : 0
+Timer : 11, programmed : 60000, actual : 0
+Timer : 12, programmed : 65000, actual : 0
+Timer : 13, programmed : 70000, actual : 0
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2, ms : 58884, Dms : 10001
+Timer : 0, programmed : 5000, actual : 5000
+Timer : 1, programmed : 10000, actual : 10000
+Timer : 2, programmed : 15000, actual : 15000
+Timer : 3, programmed : 20000, actual : 20000
+Timer : 4, programmed : 25000, actual : 25000
+Timer : 5, programmed : 30000, actual : 30000
+Timer : 6, programmed : 35000, actual : 35000
+Timer : 7, programmed : 40000, actual : 40000
+Timer : 8, programmed : 45000, actual : 45000
+Timer : 9, programmed : 50000, actual : 50000
+Timer : 10, programmed : 55000, actual : 0
+Timer : 11, programmed : 60000, actual : 0
+Timer : 12, programmed : 65000, actual : 0
+Timer : 13, programmed : 70000, actual : 0
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2, ms : 68885, Dms : 10001
+Timer : 0, programmed : 5000, actual : 5000
+Timer : 1, programmed : 10000, actual : 10000
+Timer : 2, programmed : 15000, actual : 15000
+Timer : 3, programmed : 20000, actual : 20000
+Timer : 4, programmed : 25000, actual : 25000
+Timer : 5, programmed : 30000, actual : 30000
+Timer : 6, programmed : 35000, actual : 35000
+Timer : 7, programmed : 40000, actual : 40000
+Timer : 8, programmed : 45000, actual : 45000
+Timer : 9, programmed : 50000, actual : 50000
+Timer : 10, programmed : 55000, actual : 55000
+Timer : 11, programmed : 60000, actual : 60000
+Timer : 12, programmed : 65000, actual : 0
+Timer : 13, programmed : 70000, actual : 0
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2, ms : 78886, Dms : 10001
+Timer : 0, programmed : 5000, actual : 5000
+Timer : 1, programmed : 10000, actual : 10000
+Timer : 2, programmed : 15000, actual : 15000
+Timer : 3, programmed : 20000, actual : 20000
+Timer : 4, programmed : 25000, actual : 25000
+Timer : 5, programmed : 30000, actual : 30000
+Timer : 6, programmed : 35000, actual : 35000
+Timer : 7, programmed : 40000, actual : 40000
+Timer : 8, programmed : 45000, actual : 45000
+Timer : 9, programmed : 50000, actual : 50000
+Timer : 10, programmed : 55000, actual : 55000
+Timer : 11, programmed : 60000, actual : 60000
+Timer : 12, programmed : 65000, actual : 65000
+Timer : 13, programmed : 70000, actual : 70000
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2, ms : 88887, Dms : 10001
+Timer : 0, programmed : 5000, actual : 5000
+Timer : 1, programmed : 10000, actual : 10000
+Timer : 2, programmed : 15000, actual : 15000
+Timer : 3, programmed : 20000, actual : 20000
+Timer : 4, programmed : 25000, actual : 25000
+Timer : 5, programmed : 30000, actual : 30000
+Timer : 6, programmed : 35000, actual : 35000
+Timer : 7, programmed : 40000, actual : 40000
+Timer : 8, programmed : 45000, actual : 45000
+Timer : 9, programmed : 50000, actual : 50000
+Timer : 10, programmed : 55000, actual : 55000
+Timer : 11, programmed : 60000, actual : 60000
+Timer : 12, programmed : 65000, actual : 65000
+Timer : 13, programmed : 70000, actual : 70000
+Timer : 14, programmed : 75000, actual : 75000
+Timer : 15, programmed : 80000, actual : 80000
+```
+
 
 ---
 ---
