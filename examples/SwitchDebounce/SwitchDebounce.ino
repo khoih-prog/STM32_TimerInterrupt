@@ -19,14 +19,15 @@
   Based on BlynkTimer.h
   Author: Volodymyr Shymanskyy
   
-  Version: 1.2.0
-  
+  Version: 1.2.1
+
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
   1.0.0   K Hoang      30/10/2020 Initial coding
   1.0.1   K Hoang      06/11/2020 Add complicated example ISR_16_Timers_Array using all 16 independent ISR Timers.
   1.1.1   K.Hoang      06/12/2020 Add complex examples. Bump up version to sync with other TimerInterrupt Libraries
   1.2.0   K.Hoang      08/01/2021 Add better debug feature. Optimize code and examples to reduce RAM usage
+  1.2.1   K.Hoang      20/08/2021 Add support to STM32L5 (NUCLEO_L552ZE_Q). Verify OK with STM32H7 (NUCLEO_H743ZI2)
 *****************************************************************************************************************************/
 /*
    Notes:
@@ -48,7 +49,7 @@
 
 #if !( defined(STM32F0) || defined(STM32F1) || defined(STM32F2) || defined(STM32F3)  ||defined(STM32F4) || defined(STM32F7) || \
        defined(STM32L0) || defined(STM32L1) || defined(STM32L4) || defined(STM32H7)  ||defined(STM32G0) || defined(STM32G4) || \
-       defined(STM32WB) || defined(STM32MP1) )
+       defined(STM32WB) || defined(STM32MP1) || defined(STM32L5) )
   #error This code is designed to run on STM32F/L/H/G/WB/MP1 platform! Please check your Tools->Board setting.
 #endif
 

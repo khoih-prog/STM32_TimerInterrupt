@@ -17,6 +17,7 @@
   * [Currently supported Boards](#currently-supported-boards)
   * [Important Notes about ISR](#important-notes-about-isr)
 * [Changelog](#changelog)
+  * [Releases v1.2.1](#releases-v121)
   * [Releases v1.2.0](#releases-v120)
   * [Releases v1.1.1](#releases-v111)
   * [Releases v1.0.1](#releases-v101)
@@ -123,7 +124,7 @@ The catch is **your function is now part of an ISR (Interrupt Service Routine), 
 
 1. **STM32 boards with built-in Ethernet LAN8742A** such as :
 
-  - **Nucleo-144 (F429ZI, F767ZI)**
+  - **Nucleo-144 (F429ZI, F767ZI, NUCLEO_H743ZI2, NUCLEO_L552ZE_Q)**
   - **Discovery (STM32F746G-DISCOVERY)**
   - **All STM32 boards (STM32F/L/H/G/WB/MP1) with 32K+ Flash, with Built-in Ethernet**
   
@@ -133,7 +134,7 @@ The catch is **your function is now part of an ISR (Interrupt Service Routine), 
 - Nucleo-64
 - Discovery
 - Generic STM32F0, STM32F1, STM32F2, STM32F3, STM32F4, STM32F7 (with 64+K Flash): x8 and up
-- STM32L0, STM32L1, STM32L4
+- STM32L0, STM32L1, STM32L4, STM32L5
 - STM32G0, STM32G4
 - STM32H7
 - STM32WB
@@ -155,6 +156,11 @@ The catch is **your function is now part of an ISR (Interrupt Service Routine), 
 ---
 
 ## Changelog
+
+### Releases v1.2.1
+
+1. Add support to **STM32L5 (NUCLEO_L552ZE_Q)**
+2. Verify OK with **STM32H7 (NUCLEO_H743ZI2)**
 
 ### Releases v1.2.0
 
@@ -182,8 +188,8 @@ The catch is **your function is now part of an ISR (Interrupt Service Routine), 
 
 ## Prerequisites
 
- 1. [`Arduino IDE 1.8.13+` for Arduino](https://www.arduino.cc/en/Main/Software)
- 2. [`Arduino Core for STM32 v1.9.0+`](https://github.com/stm32duino/Arduino_Core_STM32) for STM32F/L/H/G/WB/MP1 boards. [![GitHub release](https://img.shields.io/github/release/stm32duino/Arduino_Core_STM32.svg)](https://github.com/stm32duino/Arduino_Core_STM32/releases/latest)
+ 1. [`Arduino IDE 1.8.15+` for Arduino](https://www.arduino.cc/en/Main/Software)
+ 2. [`Arduino Core for STM32 v2.0.0+`](https://github.com/stm32duino/Arduino_Core_STM32) for STM32F/L/H/G/WB/MP1 boards. [![GitHub release](https://img.shields.io/github/release/stm32duino/Arduino_Core_STM32.svg)](https://github.com/stm32duino/Arduino_Core_STM32/releases/latest)
  3. [`Blynk library 0.6.1+`](https://github.com/blynkkk/blynk-library/releases). [![Latest release](https://img.shields.io/github/release/blynkkk/blynk-library.svg)](https://github.com/blynkkk/blynk-library/releases/latest/) to use with certain example.
  4. For built-in LAN8742A Ethernet:
    - [`STM32Ethernet library v1.2.0+`](https://github.com/stm32duino/STM32Ethernet) for built-in LAN8742A Ethernet on (Nucleo-144, Discovery). [![GitHub release](https://img.shields.io/github/release/stm32duino/STM32Ethernet.svg)](https://github.com/stm32duino/STM32Ethernet/releases/latest)
@@ -194,8 +200,8 @@ The catch is **your function is now part of an ISR (Interrupt Service Routine), 
    - [`Ethernet2 library v1.0.4+`](https://github.com/khoih-prog/Ethernet2) for W5500. [![GitHub release](https://img.shields.io/github/release/adafruit/Ethernet2.svg)](https://github.com/adafruit/Ethernet2/releases/latest)
    - [`Ethernet3 library v1.5.5+`](https://github.com/sstaub/Ethernet3) for W5500/WIZ550io/WIZ850io/USR-ES1 with Wiznet W5500 chip. [![GitHub release](https://img.shields.io/github/release/sstaub/Ethernet3.svg)](https://github.com/sstaub/Ethernet3/releases/latest)
  6. For ENC28J60 Ethernet:
-   - [`EthernetENC library v2.0.0+`](https://github.com/jandrassy/EthernetENC) for ENC28J60. [![GitHub release](https://img.shields.io/github/release/jandrassy/EthernetENC.svg)](https://github.com/jandrassy/EthernetENC/releases/latest). **New and Better**
-   - [`UIPEthernet library v2.0.9+`](https://github.com/UIPEthernet/UIPEthernet) for ENC28J60. [![GitHub release](https://img.shields.io/github/release/UIPEthernet/UIPEthernet.svg)](https://github.com/UIPEthernet/UIPEthernet/releases/latest)
+   - [`EthernetENC library v2.0.1+`](https://github.com/jandrassy/EthernetENC) for ENC28J60. [![GitHub release](https://img.shields.io/github/release/jandrassy/EthernetENC.svg)](https://github.com/jandrassy/EthernetENC/releases/latest). **New and Better**
+   - [`UIPEthernet library v2.0.10+`](https://github.com/UIPEthernet/UIPEthernet) for ENC28J60. [![GitHub release](https://img.shields.io/github/release/UIPEthernet/UIPEthernet.svg)](https://github.com/UIPEthernet/UIPEthernet/releases/latest)
 
  7. To use with certain example
    - [`SimpleTimer library`](https://github.com/schinken/SimpleTimer) for [ISR_16_Timers_Array example](examples/ISR_16_Timers_Array).
@@ -584,7 +590,7 @@ void setup()
 ```
 #if !( defined(STM32F0) || defined(STM32F1) || defined(STM32F2) || defined(STM32F3)  ||defined(STM32F4) || defined(STM32F7) || \
        defined(STM32L0) || defined(STM32L1) || defined(STM32L4) || defined(STM32H7)  ||defined(STM32G0) || defined(STM32G4) || \
-       defined(STM32WB) || defined(STM32MP1) )
+       defined(STM32WB) || defined(STM32MP1) || defined(STM32L5) )
   #error This code is designed to run on STM32F/L/H/G/WB/MP1 platform! Please check your Tools->Board setting.
 #endif
 
@@ -601,15 +607,15 @@ void setup()
 #include <SimpleTimer.h>              // https://github.com/schinken/SimpleTimer
 
 #ifndef LED_BUILTIN
-  #define LED_BUILTIN       13
+#define LED_BUILTIN       13
 #endif
 
 #ifndef LED_BLUE
-  #define LED_BLUE          2
+#define LED_BLUE          2
 #endif
 
 #ifndef LED_RED
-  #define LED_RED           3
+#define LED_RED           3
 #endif
 
 #define HW_TIMER_INTERVAL_US      10000L
@@ -619,7 +625,7 @@ volatile uint32_t startMillis = 0;
 // Depending on the board, you can select STM32 Hardware Timer from TIM1-TIM22
 // For example, F767ZI can select Timer from TIM1-TIM14
 // If you select a Timer not correctly, you'll get a message from ci[ompiler
-// 'TIMxx' was not declared in this scope; did you mean 'TIMyy'? 
+// 'TIMxx' was not declared in this scope; did you mean 'TIMyy'?
 
 // Init STM32 timer TIM1
 STM32Timer ITimer(TIM1);
@@ -661,39 +667,39 @@ typedef void (*irqCallback)  ();
 
 #if USE_COMPLEX_STRUCT
 
-  typedef struct 
-  {
-    irqCallback   irqCallbackFunc;
-    uint32_t      TimerInterval;
-    unsigned long deltaMillis;
-    unsigned long previousMillis;
-  } ISRTimerData;
-  
-  // In NRF52, avoid doing something fancy in ISR, for example Serial.print()
-  // The pure simple Serial.prints here are just for demonstration and testing. Must be eliminate in working environment
-  // Or you can get this run-time error / crash
-  
-  void doingSomething(int index);
+typedef struct
+{
+  irqCallback   irqCallbackFunc;
+  uint32_t      TimerInterval;
+  unsigned long deltaMillis;
+  unsigned long previousMillis;
+} ISRTimerData;
+
+// In NRF52, avoid doing something fancy in ISR, for example Serial.print()
+// The pure simple Serial.prints here are just for demonstration and testing. Must be eliminate in working environment
+// Or you can get this run-time error / crash
+
+void doingSomething(int index);
 
 #else
 
-  volatile unsigned long deltaMillis    [NUMBER_ISR_TIMERS] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-  volatile unsigned long previousMillis [NUMBER_ISR_TIMERS] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-  
-  // You can assign any interval for any timer here, in milliseconds
-  uint32_t TimerInterval[NUMBER_ISR_TIMERS] =
-  {
-    5000L,  10000L,  15000L,  20000L,  25000L,  30000L,  35000L,  40000L,
-    45000L, 50000L,  55000L,  60000L,  65000L,  70000L,  75000L,  80000L
-  };
-  
-  void doingSomething(int index)
-  {
-    unsigned long currentMillis  = millis();
-    
-    deltaMillis[index]    = currentMillis - previousMillis[index];
-    previousMillis[index] = currentMillis;
-  }
+volatile unsigned long deltaMillis    [NUMBER_ISR_TIMERS] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+volatile unsigned long previousMillis [NUMBER_ISR_TIMERS] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+// You can assign any interval for any timer here, in milliseconds
+uint32_t TimerInterval[NUMBER_ISR_TIMERS] =
+{
+  5000L,  10000L,  15000L,  20000L,  25000L,  30000L,  35000L,  40000L,
+  45000L, 50000L,  55000L,  60000L,  65000L,  70000L,  75000L,  80000L
+};
+
+void doingSomething(int index)
+{
+  unsigned long currentMillis  = millis();
+
+  deltaMillis[index]    = currentMillis - previousMillis[index];
+  previousMillis[index] = currentMillis;
+}
 
 #endif
 
@@ -783,44 +789,44 @@ void doingSomething15()
 
 #if USE_COMPLEX_STRUCT
 
-  ISRTimerData curISRTimerData[NUMBER_ISR_TIMERS] =
-  {
-    //irqCallbackFunc, TimerInterval, deltaMillis, previousMillis
-    { doingSomething0,    5000L, 0, 0 },
-    { doingSomething1,   10000L, 0, 0 },
-    { doingSomething2,   15000L, 0, 0 },
-    { doingSomething3,   20000L, 0, 0 },
-    { doingSomething4,   25000L, 0, 0 },
-    { doingSomething5,   30000L, 0, 0 },
-    { doingSomething6,   35000L, 0, 0 },
-    { doingSomething7,   40000L, 0, 0 },
-    { doingSomething8,   45000L, 0, 0 },
-    { doingSomething9,   50000L, 0, 0 },
-    { doingSomething10,  55000L, 0, 0 },
-    { doingSomething11,  60000L, 0, 0 },
-    { doingSomething12,  65000L, 0, 0 },
-    { doingSomething13,  70000L, 0, 0 },
-    { doingSomething14,  75000L, 0, 0 },
-    { doingSomething15,  80000L, 0, 0 }
-  };
-  
-  void doingSomething(int index)
-  {
-    unsigned long currentMillis  = millis();
-    
-    curISRTimerData[index].deltaMillis    = currentMillis - curISRTimerData[index].previousMillis;
-    curISRTimerData[index].previousMillis = currentMillis;
-  }
+ISRTimerData curISRTimerData[NUMBER_ISR_TIMERS] =
+{
+  //irqCallbackFunc, TimerInterval, deltaMillis, previousMillis
+  { doingSomething0,    5000L, 0, 0 },
+  { doingSomething1,   10000L, 0, 0 },
+  { doingSomething2,   15000L, 0, 0 },
+  { doingSomething3,   20000L, 0, 0 },
+  { doingSomething4,   25000L, 0, 0 },
+  { doingSomething5,   30000L, 0, 0 },
+  { doingSomething6,   35000L, 0, 0 },
+  { doingSomething7,   40000L, 0, 0 },
+  { doingSomething8,   45000L, 0, 0 },
+  { doingSomething9,   50000L, 0, 0 },
+  { doingSomething10,  55000L, 0, 0 },
+  { doingSomething11,  60000L, 0, 0 },
+  { doingSomething12,  65000L, 0, 0 },
+  { doingSomething13,  70000L, 0, 0 },
+  { doingSomething14,  75000L, 0, 0 },
+  { doingSomething15,  80000L, 0, 0 }
+};
+
+void doingSomething(int index)
+{
+  unsigned long currentMillis  = millis();
+
+  curISRTimerData[index].deltaMillis    = currentMillis - curISRTimerData[index].previousMillis;
+  curISRTimerData[index].previousMillis = currentMillis;
+}
 
 #else
 
-  irqCallback irqCallbackFunc[NUMBER_ISR_TIMERS] =
-  {
-    doingSomething0,  doingSomething1,  doingSomething2,  doingSomething3,
-    doingSomething4,  doingSomething5,  doingSomething6,  doingSomething7,
-    doingSomething8,  doingSomething9,  doingSomething10, doingSomething11,
-    doingSomething12, doingSomething13, doingSomething14, doingSomething15
-  };
+irqCallback irqCallbackFunc[NUMBER_ISR_TIMERS] =
+{
+  doingSomething0,  doingSomething1,  doingSomething2,  doingSomething3,
+  doingSomething4,  doingSomething5,  doingSomething6,  doingSomething7,
+  doingSomething8,  doingSomething9,  doingSomething10, doingSomething11,
+  doingSomething12, doingSomething13, doingSomething14, doingSomething15
+};
 
 #endif
 ///////////////////////////////////////////
@@ -840,13 +846,13 @@ void simpleTimerDoingSomething2s()
 
   unsigned long currMillis = millis();
 
-  Serial.print(F("SimpleTimer : "));Serial.print(SIMPLE_TIMER_MS / 1000);
+  Serial.print(F("SimpleTimer : ")); Serial.print(SIMPLE_TIMER_MS / 1000);
   Serial.print(F(", ms : ")); Serial.print(currMillis);
   Serial.print(F(", Dms : ")); Serial.println(currMillis - previousMillis);
 
   for (uint16_t i = 0; i < NUMBER_ISR_TIMERS; i++)
   {
-#if USE_COMPLEX_STRUCT    
+#if USE_COMPLEX_STRUCT
     Serial.print(F("Timer : ")); Serial.print(i);
     Serial.print(F(", programmed : ")); Serial.print(curISRTimerData[i].TimerInterval);
     Serial.print(F(", actual : ")); Serial.println(curISRTimerData[i].deltaMillis);
@@ -854,7 +860,7 @@ void simpleTimerDoingSomething2s()
     Serial.print(F("Timer : ")); Serial.print(i);
     Serial.print(F(", programmed : ")); Serial.print(TimerInterval[i]);
     Serial.print(F(", actual : ")); Serial.println(deltaMillis[i]);
-#endif    
+#endif
   }
 
   previousMillis = currMillis;
@@ -892,7 +898,7 @@ void setup()
 #else
     previousMillis[i] = startMillis;
     ISR_Timer.setInterval(TimerInterval[i], irqCallbackFunc[i]);
-#endif    
+#endif
   }
 
   // You need this timer for non-critical tasks. Avoid abusing ISR if not absolutely necessary.
@@ -1315,7 +1321,7 @@ In this example, 16 independent ISR Timers are used, yet utilized just one Hardw
 
 ```
 Starting ISR_16_Timers_Array_Complex on BLUEPILL_F103C8
-STM32TimerInterrupt v1.2.0
+STM32TimerInterrupt v1.2.1
 CPU Frequency = 72 MHz
 Starting ITimer OK, millis() = 8880
 SimpleTimer : 2, ms : 18880, Dms : 10000
@@ -1456,6 +1462,311 @@ Timer : 14, programmed : 75000, actual : 75000
 Timer : 15, programmed : 80000, actual : 80000
 ```
 
+---
+
+### 7. ISR_16_Timers_Array_Complex on STM32H7 NUCLEO_H743ZI2
+
+The following is the sample terminal output when running new example [ISR_16_Timers_Array_Complex](examples/ISR_16_Timers_Array_Complex) on **STM32H7 NUCLEO_H743ZI2** to demonstrate the accuracy of ISR Hardware Timer, **especially when system is very busy or blocked**. The 16 independent ISR timers are **programmed to be activated repetitively after certain intervals, is activated exactly after that programmed interval !!!**
+
+While software timer, **programmed for 2s, is activated after 10.000s in loop()!!!**.
+
+In this example, 16 independent ISR Timers are used, yet utilized just one Hardware Timer. The Timer Intervals and Function Pointers are stored in arrays to facilitate the code modification.
+
+```
+Starting ISR_16_Timers_Array_Complex on NUCLEO_H743ZI2
+STM32TimerInterrupt v1.2.1
+CPU Frequency = 480 MHz
+Starting ITimer OK, millis() = 109
+SimpleTimer : 2, ms : 10112, Dms : 10003
+Timer : 0, programmed : 5000, actual : 5010
+Timer : 1, programmed : 10000, actual : 10010
+Timer : 2, programmed : 15000, actual : 0
+Timer : 3, programmed : 20000, actual : 0
+Timer : 4, programmed : 25000, actual : 0
+Timer : 5, programmed : 30000, actual : 0
+Timer : 6, programmed : 35000, actual : 0
+Timer : 7, programmed : 40000, actual : 0
+Timer : 8, programmed : 45000, actual : 0
+Timer : 9, programmed : 50000, actual : 0
+Timer : 10, programmed : 55000, actual : 0
+Timer : 11, programmed : 60000, actual : 0
+Timer : 12, programmed : 65000, actual : 0
+Timer : 13, programmed : 70000, actual : 0
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2, ms : 20176, Dms : 10064
+Timer : 0, programmed : 5000, actual : 5000
+Timer : 1, programmed : 10000, actual : 10000
+Timer : 2, programmed : 15000, actual : 15010
+Timer : 3, programmed : 20000, actual : 20010
+Timer : 4, programmed : 25000, actual : 0
+Timer : 5, programmed : 30000, actual : 0
+Timer : 6, programmed : 35000, actual : 0
+Timer : 7, programmed : 40000, actual : 0
+Timer : 8, programmed : 45000, actual : 0
+Timer : 9, programmed : 50000, actual : 0
+Timer : 10, programmed : 55000, actual : 0
+Timer : 11, programmed : 60000, actual : 0
+Timer : 12, programmed : 65000, actual : 0
+Timer : 13, programmed : 70000, actual : 0
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2, ms : 30241, Dms : 10065
+Timer : 0, programmed : 5000, actual : 5000
+Timer : 1, programmed : 10000, actual : 10000
+Timer : 2, programmed : 15000, actual : 15000
+Timer : 3, programmed : 20000, actual : 20010
+Timer : 4, programmed : 25000, actual : 25010
+Timer : 5, programmed : 30000, actual : 30010
+Timer : 6, programmed : 35000, actual : 0
+Timer : 7, programmed : 40000, actual : 0
+Timer : 8, programmed : 45000, actual : 0
+Timer : 9, programmed : 50000, actual : 0
+Timer : 10, programmed : 55000, actual : 0
+Timer : 11, programmed : 60000, actual : 0
+Timer : 12, programmed : 65000, actual : 0
+Timer : 13, programmed : 70000, actual : 0
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2, ms : 40306, Dms : 10065
+Timer : 0, programmed : 5000, actual : 5000
+Timer : 1, programmed : 10000, actual : 10000
+Timer : 2, programmed : 15000, actual : 15000
+Timer : 3, programmed : 20000, actual : 20000
+Timer : 4, programmed : 25000, actual : 25010
+Timer : 5, programmed : 30000, actual : 30010
+Timer : 6, programmed : 35000, actual : 35010
+Timer : 7, programmed : 40000, actual : 40010
+Timer : 8, programmed : 45000, actual : 0
+Timer : 9, programmed : 50000, actual : 0
+Timer : 10, programmed : 55000, actual : 0
+Timer : 11, programmed : 60000, actual : 0
+Timer : 12, programmed : 65000, actual : 0
+Timer : 13, programmed : 70000, actual : 0
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2, ms : 50372, Dms : 10066
+Timer : 0, programmed : 5000, actual : 5000
+Timer : 1, programmed : 10000, actual : 10000
+Timer : 2, programmed : 15000, actual : 15000
+Timer : 3, programmed : 20000, actual : 20000
+Timer : 4, programmed : 25000, actual : 25000
+Timer : 5, programmed : 30000, actual : 30010
+Timer : 6, programmed : 35000, actual : 35010
+Timer : 7, programmed : 40000, actual : 40010
+Timer : 8, programmed : 45000, actual : 45010
+Timer : 9, programmed : 50000, actual : 50010
+Timer : 10, programmed : 55000, actual : 0
+Timer : 11, programmed : 60000, actual : 0
+Timer : 12, programmed : 65000, actual : 0
+Timer : 13, programmed : 70000, actual : 0
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2, ms : 60439, Dms : 10067
+Timer : 0, programmed : 5000, actual : 5000
+Timer : 1, programmed : 10000, actual : 9999
+Timer : 2, programmed : 15000, actual : 14999
+Timer : 3, programmed : 20000, actual : 19999
+Timer : 4, programmed : 25000, actual : 25000
+Timer : 5, programmed : 30000, actual : 29999
+Timer : 6, programmed : 35000, actual : 35010
+Timer : 7, programmed : 40000, actual : 40010
+Timer : 8, programmed : 45000, actual : 45010
+Timer : 9, programmed : 50000, actual : 50010
+Timer : 10, programmed : 55000, actual : 55009
+Timer : 11, programmed : 60000, actual : 60009
+Timer : 12, programmed : 65000, actual : 0
+Timer : 13, programmed : 70000, actual : 0
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2, ms : 70506, Dms : 10067
+Timer : 0, programmed : 5000, actual : 5000
+Timer : 1, programmed : 10000, actual : 10000
+Timer : 2, programmed : 15000, actual : 14999
+Timer : 3, programmed : 20000, actual : 19999
+Timer : 4, programmed : 25000, actual : 25000
+Timer : 5, programmed : 30000, actual : 29999
+Timer : 6, programmed : 35000, actual : 34999
+Timer : 7, programmed : 40000, actual : 40010
+Timer : 8, programmed : 45000, actual : 45010
+Timer : 9, programmed : 50000, actual : 50010
+Timer : 10, programmed : 55000, actual : 55009
+Timer : 11, programmed : 60000, actual : 60009
+Timer : 12, programmed : 65000, actual : 65009
+Timer : 13, programmed : 70000, actual : 70009
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2, ms : 80574, Dms : 10068
+Timer : 0, programmed : 5000, actual : 5000
+Timer : 1, programmed : 10000, actual : 10000
+Timer : 2, programmed : 15000, actual : 15000
+Timer : 3, programmed : 20000, actual : 20000
+Timer : 4, programmed : 25000, actual : 24999
+Timer : 5, programmed : 30000, actual : 29999
+Timer : 6, programmed : 35000, actual : 34999
+Timer : 7, programmed : 40000, actual : 39999
+Timer : 8, programmed : 45000, actual : 45010
+Timer : 9, programmed : 50000, actual : 50010
+Timer : 10, programmed : 55000, actual : 55009
+Timer : 11, programmed : 60000, actual : 60009
+Timer : 12, programmed : 65000, actual : 65009
+Timer : 13, programmed : 70000, actual : 70009
+Timer : 14, programmed : 75000, actual : 75009
+Timer : 15, programmed : 80000, actual : 80009
+```
+
+---
+
+### 8. ISR_16_Timers_Array_Complex on STM32L5 NUCLEO_L552ZE_Q
+
+The following is the sample terminal output when running new example [ISR_16_Timers_Array_Complex](examples/ISR_16_Timers_Array_Complex) on **STM32L5 NUCLEO_L552ZE_Q** to demonstrate the accuracy of ISR Hardware Timer, **especially when system is very busy or blocked**. The 16 independent ISR timers are **programmed to be activated repetitively after certain intervals, is activated exactly after that programmed interval !!!**
+
+While software timer, **programmed for 2s, is activated after 10.000s in loop()!!!**.
+
+In this example, 16 independent ISR Timers are used, yet utilized just one Hardware Timer. The Timer Intervals and Function Pointers are stored in arrays to facilitate the code modification.
+
+```
+Starting ISR_16_Timers_Array_Complex on NUCLEO_L552ZE_Q
+STM32TimerInterrupt v1.2.1
+CPU Frequency = 110 MHz
+Starting ITimer OK, millis() = 109
+SimpleTimer : 2, ms : 10112, Dms : 10003
+Timer : 0, programmed : 5000, actual : 5011
+Timer : 1, programmed : 10000, actual : 10011
+Timer : 2, programmed : 15000, actual : 0
+Timer : 3, programmed : 20000, actual : 0
+Timer : 4, programmed : 25000, actual : 0
+Timer : 5, programmed : 30000, actual : 0
+Timer : 6, programmed : 35000, actual : 0
+Timer : 7, programmed : 40000, actual : 0
+Timer : 8, programmed : 45000, actual : 0
+Timer : 9, programmed : 50000, actual : 0
+Timer : 10, programmed : 55000, actual : 0
+Timer : 11, programmed : 60000, actual : 0
+Timer : 12, programmed : 65000, actual : 0
+Timer : 13, programmed : 70000, actual : 0
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2, ms : 20177, Dms : 10065
+Timer : 0, programmed : 5000, actual : 4999
+Timer : 1, programmed : 10000, actual : 9999
+Timer : 2, programmed : 15000, actual : 15011
+Timer : 3, programmed : 20000, actual : 20010
+Timer : 4, programmed : 25000, actual : 0
+Timer : 5, programmed : 30000, actual : 0
+Timer : 6, programmed : 35000, actual : 0
+Timer : 7, programmed : 40000, actual : 0
+Timer : 8, programmed : 45000, actual : 0
+Timer : 9, programmed : 50000, actual : 0
+Timer : 10, programmed : 55000, actual : 0
+Timer : 11, programmed : 60000, actual : 0
+Timer : 12, programmed : 65000, actual : 0
+Timer : 13, programmed : 70000, actual : 0
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2, ms : 30242, Dms : 10065
+Timer : 0, programmed : 5000, actual : 5000
+Timer : 1, programmed : 10000, actual : 10000
+Timer : 2, programmed : 15000, actual : 14999
+Timer : 3, programmed : 20000, actual : 20010
+Timer : 4, programmed : 25000, actual : 25010
+Timer : 5, programmed : 30000, actual : 30010
+Timer : 6, programmed : 35000, actual : 0
+Timer : 7, programmed : 40000, actual : 0
+Timer : 8, programmed : 45000, actual : 0
+Timer : 9, programmed : 50000, actual : 0
+Timer : 10, programmed : 55000, actual : 0
+Timer : 11, programmed : 60000, actual : 0
+Timer : 12, programmed : 65000, actual : 0
+Timer : 13, programmed : 70000, actual : 0
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2, ms : 40308, Dms : 10066
+Timer : 0, programmed : 5000, actual : 5000
+Timer : 1, programmed : 10000, actual : 10000
+Timer : 2, programmed : 15000, actual : 14999
+Timer : 3, programmed : 20000, actual : 20000
+Timer : 4, programmed : 25000, actual : 25010
+Timer : 5, programmed : 30000, actual : 30010
+Timer : 6, programmed : 35000, actual : 35010
+Timer : 7, programmed : 40000, actual : 40010
+Timer : 8, programmed : 45000, actual : 0
+Timer : 9, programmed : 50000, actual : 0
+Timer : 10, programmed : 55000, actual : 0
+Timer : 11, programmed : 60000, actual : 0
+Timer : 12, programmed : 65000, actual : 0
+Timer : 13, programmed : 70000, actual : 0
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2, ms : 50375, Dms : 10067
+Timer : 0, programmed : 5000, actual : 5000
+Timer : 1, programmed : 10000, actual : 10000
+Timer : 2, programmed : 15000, actual : 15000
+Timer : 3, programmed : 20000, actual : 20000
+Timer : 4, programmed : 25000, actual : 25000
+Timer : 5, programmed : 30000, actual : 30010
+Timer : 6, programmed : 35000, actual : 35010
+Timer : 7, programmed : 40000, actual : 40010
+Timer : 8, programmed : 45000, actual : 45010
+Timer : 9, programmed : 50000, actual : 50010
+Timer : 10, programmed : 55000, actual : 0
+Timer : 11, programmed : 60000, actual : 0
+Timer : 12, programmed : 65000, actual : 0
+Timer : 13, programmed : 70000, actual : 0
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2, ms : 60443, Dms : 10068
+Timer : 0, programmed : 5000, actual : 5000
+Timer : 1, programmed : 10000, actual : 10000
+Timer : 2, programmed : 15000, actual : 15000
+Timer : 3, programmed : 20000, actual : 20000
+Timer : 4, programmed : 25000, actual : 25000
+Timer : 5, programmed : 30000, actual : 30000
+Timer : 6, programmed : 35000, actual : 35010
+Timer : 7, programmed : 40000, actual : 40010
+Timer : 8, programmed : 45000, actual : 45010
+Timer : 9, programmed : 50000, actual : 50010
+Timer : 10, programmed : 55000, actual : 55010
+Timer : 11, programmed : 60000, actual : 60010
+Timer : 12, programmed : 65000, actual : 0
+Timer : 13, programmed : 70000, actual : 0
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2, ms : 70511, Dms : 10068
+Timer : 0, programmed : 5000, actual : 5000
+Timer : 1, programmed : 10000, actual : 10000
+Timer : 2, programmed : 15000, actual : 15000
+Timer : 3, programmed : 20000, actual : 20000
+Timer : 4, programmed : 25000, actual : 25000
+Timer : 5, programmed : 30000, actual : 30000
+Timer : 6, programmed : 35000, actual : 35000
+Timer : 7, programmed : 40000, actual : 40010
+Timer : 8, programmed : 45000, actual : 45010
+Timer : 9, programmed : 50000, actual : 50010
+Timer : 10, programmed : 55000, actual : 55010
+Timer : 11, programmed : 60000, actual : 60010
+Timer : 12, programmed : 65000, actual : 65010
+Timer : 13, programmed : 70000, actual : 70010
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2, ms : 80580, Dms : 10069
+Timer : 0, programmed : 5000, actual : 5000
+Timer : 1, programmed : 10000, actual : 10000
+Timer : 2, programmed : 15000, actual : 15000
+Timer : 3, programmed : 20000, actual : 20000
+Timer : 4, programmed : 25000, actual : 25000
+Timer : 5, programmed : 30000, actual : 30000
+Timer : 6, programmed : 35000, actual : 35000
+Timer : 7, programmed : 40000, actual : 40000
+Timer : 8, programmed : 45000, actual : 45010
+Timer : 9, programmed : 50000, actual : 50010
+Timer : 10, programmed : 55000, actual : 55010
+Timer : 11, programmed : 60000, actual : 60010
+Timer : 12, programmed : 65000, actual : 65010
+Timer : 13, programmed : 70000, actual : 70010
+Timer : 14, programmed : 75000, actual : 75010
+Timer : 15, programmed : 80000, actual : 80010
+```
 
 ---
 ---
@@ -1476,6 +1787,159 @@ You can also change the debugging level (_TIMERINTERRUPT_LOGLEVEL_) from 0 to 4
 
 ---
 
+### 6. ISR_16_Timers_Array_Complex on STM32F1 BLUEPILL_F103C8
+
+The following is the sample terminal output when running new example [ISR_16_Timers_Array_Complex](examples/ISR_16_Timers_Array_Complex) on **STM32F1  BLUEPILL_F103C8** to demonstrate the accuracy of ISR Hardware Timer, **especially when system is very busy or blocked**. The 16 independent ISR timers are **programmed to be activated repetitively after certain intervals, is activated exactly after that programmed interval !!!**
+
+While software timer, **programmed for 2s, is activated after 10.000s in loop()!!!**.
+
+In this example, 16 independent ISR Timers are used, yet utilized just one Hardware Timer. The Timer Intervals and Function Pointers are stored in arrays to facilitate the code modification.
+
+```
+Starting ISR_16_Timers_Array_Complex on BLUEPILL_F103C8
+STM32TimerInterrupt v1.2.1
+CPU Frequency = 72 MHz
+Starting ITimer OK, millis() = 8880
+SimpleTimer : 2, ms : 18880, Dms : 10000
+Timer : 0, programmed : 5000, actual : 5001
+Timer : 1, programmed : 10000, actual : 0
+Timer : 2, programmed : 15000, actual : 0
+Timer : 3, programmed : 20000, actual : 0
+Timer : 4, programmed : 25000, actual : 0
+Timer : 5, programmed : 30000, actual : 0
+Timer : 6, programmed : 35000, actual : 0
+Timer : 7, programmed : 40000, actual : 0
+Timer : 8, programmed : 45000, actual : 0
+Timer : 9, programmed : 50000, actual : 0
+Timer : 10, programmed : 55000, actual : 0
+Timer : 11, programmed : 60000, actual : 0
+Timer : 12, programmed : 65000, actual : 0
+Timer : 13, programmed : 70000, actual : 0
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2, ms : 28881, Dms : 10001
+Timer : 0, programmed : 5000, actual : 5000
+Timer : 1, programmed : 10000, actual : 10000
+Timer : 2, programmed : 15000, actual : 15000
+Timer : 3, programmed : 20000, actual : 20000
+Timer : 4, programmed : 25000, actual : 0
+Timer : 5, programmed : 30000, actual : 0
+Timer : 6, programmed : 35000, actual : 0
+Timer : 7, programmed : 40000, actual : 0
+Timer : 8, programmed : 45000, actual : 0
+Timer : 9, programmed : 50000, actual : 0
+Timer : 10, programmed : 55000, actual : 0
+Timer : 11, programmed : 60000, actual : 0
+Timer : 12, programmed : 65000, actual : 0
+Timer : 13, programmed : 70000, actual : 0
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2, ms : 38882, Dms : 10001
+Timer : 0, programmed : 5000, actual : 5000
+Timer : 1, programmed : 10000, actual : 10000
+Timer : 2, programmed : 15000, actual : 15000
+Timer : 3, programmed : 20000, actual : 20000
+Timer : 4, programmed : 25000, actual : 25000
+Timer : 5, programmed : 30000, actual : 30000
+Timer : 6, programmed : 35000, actual : 0
+Timer : 7, programmed : 40000, actual : 0
+Timer : 8, programmed : 45000, actual : 0
+Timer : 9, programmed : 50000, actual : 0
+Timer : 10, programmed : 55000, actual : 0
+Timer : 11, programmed : 60000, actual : 0
+Timer : 12, programmed : 65000, actual : 0
+Timer : 13, programmed : 70000, actual : 0
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2, ms : 48883, Dms : 10001
+Timer : 0, programmed : 5000, actual : 5000
+Timer : 1, programmed : 10000, actual : 10000
+Timer : 2, programmed : 15000, actual : 15000
+Timer : 3, programmed : 20000, actual : 20000
+Timer : 4, programmed : 25000, actual : 25000
+Timer : 5, programmed : 30000, actual : 30000
+Timer : 6, programmed : 35000, actual : 35000
+Timer : 7, programmed : 40000, actual : 40000
+Timer : 8, programmed : 45000, actual : 0
+Timer : 9, programmed : 50000, actual : 0
+Timer : 10, programmed : 55000, actual : 0
+Timer : 11, programmed : 60000, actual : 0
+Timer : 12, programmed : 65000, actual : 0
+Timer : 13, programmed : 70000, actual : 0
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2, ms : 58884, Dms : 10001
+Timer : 0, programmed : 5000, actual : 5000
+Timer : 1, programmed : 10000, actual : 10000
+Timer : 2, programmed : 15000, actual : 15000
+Timer : 3, programmed : 20000, actual : 20000
+Timer : 4, programmed : 25000, actual : 25000
+Timer : 5, programmed : 30000, actual : 30000
+Timer : 6, programmed : 35000, actual : 35000
+Timer : 7, programmed : 40000, actual : 40000
+Timer : 8, programmed : 45000, actual : 45000
+Timer : 9, programmed : 50000, actual : 50000
+Timer : 10, programmed : 55000, actual : 0
+Timer : 11, programmed : 60000, actual : 0
+Timer : 12, programmed : 65000, actual : 0
+Timer : 13, programmed : 70000, actual : 0
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2, ms : 68885, Dms : 10001
+Timer : 0, programmed : 5000, actual : 5000
+Timer : 1, programmed : 10000, actual : 10000
+Timer : 2, programmed : 15000, actual : 15000
+Timer : 3, programmed : 20000, actual : 20000
+Timer : 4, programmed : 25000, actual : 25000
+Timer : 5, programmed : 30000, actual : 30000
+Timer : 6, programmed : 35000, actual : 35000
+Timer : 7, programmed : 40000, actual : 40000
+Timer : 8, programmed : 45000, actual : 45000
+Timer : 9, programmed : 50000, actual : 50000
+Timer : 10, programmed : 55000, actual : 55000
+Timer : 11, programmed : 60000, actual : 60000
+Timer : 12, programmed : 65000, actual : 0
+Timer : 13, programmed : 70000, actual : 0
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2, ms : 78886, Dms : 10001
+Timer : 0, programmed : 5000, actual : 5000
+Timer : 1, programmed : 10000, actual : 10000
+Timer : 2, programmed : 15000, actual : 15000
+Timer : 3, programmed : 20000, actual : 20000
+Timer : 4, programmed : 25000, actual : 25000
+Timer : 5, programmed : 30000, actual : 30000
+Timer : 6, programmed : 35000, actual : 35000
+Timer : 7, programmed : 40000, actual : 40000
+Timer : 8, programmed : 45000, actual : 45000
+Timer : 9, programmed : 50000, actual : 50000
+Timer : 10, programmed : 55000, actual : 55000
+Timer : 11, programmed : 60000, actual : 60000
+Timer : 12, programmed : 65000, actual : 65000
+Timer : 13, programmed : 70000, actual : 70000
+Timer : 14, programmed : 75000, actual : 0
+Timer : 15, programmed : 80000, actual : 0
+SimpleTimer : 2, ms : 88887, Dms : 10001
+Timer : 0, programmed : 5000, actual : 5000
+Timer : 1, programmed : 10000, actual : 10000
+Timer : 2, programmed : 15000, actual : 15000
+Timer : 3, programmed : 20000, actual : 20000
+Timer : 4, programmed : 25000, actual : 25000
+Timer : 5, programmed : 30000, actual : 30000
+Timer : 6, programmed : 35000, actual : 35000
+Timer : 7, programmed : 40000, actual : 40000
+Timer : 8, programmed : 45000, actual : 45000
+Timer : 9, programmed : 50000, actual : 50000
+Timer : 10, programmed : 55000, actual : 55000
+Timer : 11, programmed : 60000, actual : 60000
+Timer : 12, programmed : 65000, actual : 65000
+Timer : 13, programmed : 70000, actual : 70000
+Timer : 14, programmed : 75000, actual : 75000
+Timer : 15, programmed : 80000, actual : 80000
+```
+
+---
+
 ### Troubleshooting
 
 If you get compilation errors, more often than not, you may need to install a newer version of the core for Arduino boards.
@@ -1486,6 +1950,11 @@ Sometimes, the library will only work if you update the board core to the latest
 ---
 
 ## Releases
+
+### Releases v1.2.1
+
+1. Add support to **STM32L5 (NUCLEO_L552ZE_Q)**
+2. Verify OK with **STM32H7 (NUCLEO_H743ZI2)**
 
 ### Releases v1.2.0
 
@@ -1512,7 +1981,7 @@ Sometimes, the library will only work if you update the board core to the latest
 
 1. **STM32 boards with built-in Ethernet LAN8742A** such as :
 
-  - **Nucleo-144 (F429ZI, F767ZI)**
+  - **Nucleo-144 (F429ZI, F767ZI, NUCLEO_H743ZI2, NUCLEO_L552ZE_Q)**
   - **Discovery (STM32F746G-DISCOVERY)**
   - **All STM32 boards (STM32F/L/H/G/WB/MP1) with 32K+ Flash, with Built-in Ethernet**
   
@@ -1522,7 +1991,7 @@ Sometimes, the library will only work if you update the board core to the latest
 - Nucleo-64
 - Discovery
 - Generic STM32F0, STM32F1, STM32F2, STM32F3, STM32F4, STM32F7 (with 64+K Flash): x8 and up
-- STM32L0, STM32L1, STM32L4
+- STM32L0, STM32L1, STM32L4, STM32L5
 - STM32G0, STM32G4
 - STM32H7
 - STM32WB
@@ -1555,6 +2024,7 @@ Submit issues to: [STM32_TimerInterrupt issues](https://github.com/khoih-prog/ST
 3. Longer time interval
 4. Similar features for remaining Arduino boards such as ESP32, ESP8266, SAMD21, SAMD51, nRF52, mbed-nRF52, Teensy, etc.
 5. Add Table of Contents
+6. Add support to **STM32L5 (NUCLEO_L552ZE_Q)**
 
 ---
 ---
