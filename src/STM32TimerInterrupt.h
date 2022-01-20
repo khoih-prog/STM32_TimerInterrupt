@@ -19,7 +19,7 @@
   Based on BlynkTimer.h
   Author: Volodymyr Shymanskyy
 
-  Version: 1.2.1
+  Version: 1.3.0
 
   Version Modified By   Date      Comments
   ------- -----------  ---------- -----------
@@ -28,6 +28,7 @@
   1.1.1   K.Hoang      06/12/2020 Add complex examples. Bump up version to sync with other TimerInterrupt Libraries
   1.2.0   K.Hoang      08/01/2021 Add better debug feature. Optimize code and examples to reduce RAM usage
   1.2.1   K.Hoang      20/08/2021 Add support to STM32L5 (NUCLEO_L552ZE_Q). Verify OK with STM32H7 (NUCLEO_H743ZI2)
+  1.3.0   K.Hoang      20/01/2022 Fix `multiple-definitions` linker error. Fix bug
 *****************************************************************************************************************************/
 
 #pragma once
@@ -42,7 +43,13 @@
 #endif
 
 #ifndef STM32_TIMER_INTERRUPT_VERSION
-  #define STM32_TIMER_INTERRUPT_VERSION       "STM32TimerInterrupt v1.2.1"
+  #define STM32_TIMER_INTERRUPT_VERSION           "STM32TimerInterrupt v1.3.0"
+  
+  #define STM32_TIMER_INTERRUPT_VERSION_MAJOR     1
+  #define STM32_TIMER_INTERRUPT_VERSION_MINOR     3
+  #define STM32_TIMER_INTERRUPT_VERSION_PATCH     0
+
+  #define STM32_TIMER_INTERRUPT_VERSION_INT      1003000
 #endif
 
 #include "TimerInterrupt_Generic_Debug.h"
@@ -85,13 +92,16 @@ class STM32TimerInterrupt
     // No params and duration now. To be addes in the future by adding similar functions here or to STM32-hal-timer.c
     bool setFrequency(float frequency, timerCallback callback)
     {
-      // select timer frequency is 1MHz for better accuracy. We don't use 16-bit prescaler for now.
+      // select timer frequency is 1MHz for better accuracy and use MICROSEC_FORMAT. We don't use 16-bit prescaler for now.
       // Will use later if very low frequency is needed.
-      _frequency  = 1000000;
-      _timerCount = (uint32_t) _frequency / frequency;
+      #define TIM_CLOCK_FREQ        (1000000.0f)
       
-      TISR_LOGWARN1(F("STM32TimerInterrupt: Timer Input Freq (Hz) ="), _hwTimer->getTimerClkFreq());
-      TISR_LOGWARN3(F("Frequency ="), _frequency, F(", _count ="), (uint32_t) (_timerCount));
+      _frequency  = frequency;
+      
+      _timerCount = (uint32_t) ( TIM_CLOCK_FREQ / frequency );
+      
+      TISR_LOGWARN3(F("Timer Input Freq (Hz) ="), _hwTimer->getTimerClkFreq(), F(", Timer Clock Frequency ="), TIM_CLOCK_FREQ);
+      TISR_LOGWARN3(F("Timer Frequency ="), _frequency, F(", _count ="), (uint32_t) (_timerCount));
 
 
       _hwTimer->setCount(0, MICROSEC_FORMAT);
@@ -136,7 +146,8 @@ class STM32TimerInterrupt
     // Duration (in milliseconds). Duration = 0 or not specified => run indefinitely
     void reattachInterrupt()
     {
-      setFrequency(_frequency, _callback);
+      if ( (_frequency > 0) && (_timerCount > 0) && (_callback != NULL) )
+        setFrequency(_frequency, _callback);
     }
 
     // Duration (in milliseconds). Duration = 0 or not specified => run indefinitely

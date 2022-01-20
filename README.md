@@ -16,12 +16,7 @@
   * [Why using ISR-based Hardware Timer Interrupt is better](#why-using-isr-based-hardware-timer-interrupt-is-better)
   * [Currently supported Boards](#currently-supported-boards)
   * [Important Notes about ISR](#important-notes-about-isr)
-* [Changelog](#changelog)
-  * [Releases v1.2.1](#releases-v121)
-  * [Releases v1.2.0](#releases-v120)
-  * [Releases v1.1.1](#releases-v111)
-  * [Releases v1.0.1](#releases-v101)
-  * [Releases v1.0.0](#releases-v100)
+* [Changelog](changelog.md)
 * [Prerequisites](#prerequisites)
 * [Installation](#installation)
   * [Use Arduino Library Manager](#use-arduino-library-manager)
@@ -69,7 +64,6 @@
   * [8. ISR_16_Timers_Array_Complex on STM32L5 NUCLEO_L552ZE_Q](#8-isr_16_timers_array_complex-on-stm32l5-nucleo_l552ze_q)
 * [Debug](#debug)
 * [Troubleshooting](#troubleshooting)
-* [Releases](#releases)
 * [Issues](#issues)
 * [TO DO](#to-do)
 * [DONE](#done)
@@ -157,42 +151,12 @@ The catch is **your function is now part of an ISR (Interrupt Service Routine), 
 ---
 ---
 
-## Changelog
-
-### Releases v1.2.1
-
-1. Add support to **STM32L5 (NUCLEO_L552ZE_Q)**
-2. Verify OK with **STM32H7 (NUCLEO_H743ZI2)**
-
-### Releases v1.2.0
-
-1. Add better debug feature.
-2. Optimize code and examples to reduce RAM usage
-3. Add Table of Contents
-
-### Releases v1.1.1
-
-1. Add example [**Change_Interval**](examples/Change_Interval) and [**ISR_16_Timers_Array_Complex**](examples/ISR_16_Timers_Array_Complex)
-2. Bump up version to sync with other TimerInterrupt Libraries. Modify Version String.
-
-
-### Releases v1.0.1
-
-1. Add complicated example [ISR_16_Timers_Array](examples/ISR_16_Timers_Array) utilizing and demonstrating the full usage of 16 independent ISR Timers.
-
-### Releases v1.0.0
-
-1. Permit up to 16 super-long-time, super-accurate ISR-based timers to avoid being blocked
-2. Using cpp code besides Impl.h code to use if Multiple-Definition linker error.
-
----
----
 
 ## Prerequisites
 
- 1. [`Arduino IDE 1.8.15+` for Arduino](https://www.arduino.cc/en/Main/Software)
- 2. [`Arduino Core for STM32 v2.0.0+`](https://github.com/stm32duino/Arduino_Core_STM32) for STM32F/L/H/G/WB/MP1 boards. [![GitHub release](https://img.shields.io/github/release/stm32duino/Arduino_Core_STM32.svg)](https://github.com/stm32duino/Arduino_Core_STM32/releases/latest)
- 3. [`Blynk library 0.6.1+`](https://github.com/blynkkk/blynk-library/releases). [![Latest release](https://img.shields.io/github/release/blynkkk/blynk-library.svg)](https://github.com/blynkkk/blynk-library/releases/latest/) to use with certain example.
+ 1. [`Arduino IDE 1.8.19+` for Arduino](https://github.com/arduino/Arduino). [![GitHub release](https://img.shields.io/github/release/arduino/Arduino.svg)](https://github.com/arduino/Arduino/releases/latest)
+ 2. [`Arduino Core for STM32 v2.2.0+`](https://github.com/stm32duino/Arduino_Core_STM32) for STM32F/L/H/G/WB/MP1 boards. [![GitHub release](https://img.shields.io/github/release/stm32duino/Arduino_Core_STM32.svg)](https://github.com/stm32duino/Arduino_Core_STM32/releases/latest)
+ 3. [`Blynk library 1.0.1+`](https://github.com/blynkkk/blynk-library/releases). [![Latest release](https://img.shields.io/github/release/blynkkk/blynk-library.svg)](https://github.com/blynkkk/blynk-library/releases/latest/) to use with certain example.
  4. For built-in LAN8742A Ethernet:
    - [`STM32Ethernet library v1.2.0+`](https://github.com/stm32duino/STM32Ethernet) for built-in LAN8742A Ethernet on (Nucleo-144, Discovery). [![GitHub release](https://img.shields.io/github/release/stm32duino/STM32Ethernet.svg)](https://github.com/stm32duino/STM32Ethernet/releases/latest)
    - [`LwIP library v2.1.2+`](https://github.com/stm32duino/LwIP) for built-in LAN8742A Ethernet on (Nucleo-144, Discovery). [![GitHub release](https://img.shields.io/github/release/stm32duino/LwIP.svg)](https://github.com/stm32duino/LwIP/releases/latest)
@@ -202,11 +166,11 @@ The catch is **your function is now part of an ISR (Interrupt Service Routine), 
    - [`Ethernet2 library v1.0.4+`](https://github.com/khoih-prog/Ethernet2) for W5500. [![GitHub release](https://img.shields.io/github/release/adafruit/Ethernet2.svg)](https://github.com/adafruit/Ethernet2/releases/latest)
    - [`Ethernet3 library v1.5.5+`](https://github.com/sstaub/Ethernet3) for W5500/WIZ550io/WIZ850io/USR-ES1 with Wiznet W5500 chip. [![GitHub release](https://img.shields.io/github/release/sstaub/Ethernet3.svg)](https://github.com/sstaub/Ethernet3/releases/latest)
  6. For ENC28J60 Ethernet:
-   - [`EthernetENC library v2.0.1+`](https://github.com/jandrassy/EthernetENC) for ENC28J60. [![GitHub release](https://img.shields.io/github/release/jandrassy/EthernetENC.svg)](https://github.com/jandrassy/EthernetENC/releases/latest). **New and Better**
-   - [`UIPEthernet library v2.0.10+`](https://github.com/UIPEthernet/UIPEthernet) for ENC28J60. [![GitHub release](https://img.shields.io/github/release/UIPEthernet/UIPEthernet.svg)](https://github.com/UIPEthernet/UIPEthernet/releases/latest)
+   - [`EthernetENC library v2.0.2+`](https://github.com/jandrassy/EthernetENC) for ENC28J60. [![GitHub release](https://img.shields.io/github/release/jandrassy/EthernetENC.svg)](https://github.com/jandrassy/EthernetENC/releases/latest). **New and Better**
+   - [`UIPEthernet library v2.0.11+`](https://github.com/UIPEthernet/UIPEthernet) for ENC28J60. [![GitHub release](https://img.shields.io/github/release/UIPEthernet/UIPEthernet.svg)](https://github.com/UIPEthernet/UIPEthernet/releases/latest)
 
  7. To use with certain example
-   - [`SimpleTimer library`](https://github.com/schinken/SimpleTimer) for [ISR_16_Timers_Array example](examples/ISR_16_Timers_Array).
+   - [`SimpleTimer library`](https://github.com/jfturcot/SimpleTimer) for [ISR_16_Timers_Array example](examples/ISR_16_Timers_Array).
 ---
 ---
 
@@ -305,24 +269,20 @@ Check if you need to install the UIPEthernet patch [new STM32 core F3/F4 compati
 
 ### HOWTO Fix `Multiple Definitions` Linker Error
 
-The current library implementation, using **xyz-Impl.h instead of standard xyz.cpp**, possibly creates certain `Multiple Definitions` Linker error in certain use cases. Although it's simple to just modify several lines of code, either in the library or in the application, the library is adding 2 more source directories
+The current library implementation, using `xyz-Impl.h` instead of standard `xyz.cpp`, possibly creates certain `Multiple Definitions` Linker error in certain use cases.
 
-1. **scr_h** for new h-only files
-2. **src_cpp** for standard h/cpp files
+You can use
 
-besides the standard **src** directory.
+```
+#include <STM32_ISR_Timer.hpp>               //https://github.com/khoih-prog/STM32_TimerInterrupt
+```
 
-To use the **old standard cpp** way, locate this library' directory, then just 
+in many files. But be sure to use the following `#include <STM32_ISR_Timer.h>` **in just 1 `.h`, `.cpp` or `.ino` file**, which must **not be included in any other file**, to avoid `Multiple Definitions` Linker Error
 
-1. **Delete the all the files in src directory.**
-2. **Copy all the files in src_cpp directory into src.**
-3. Close then reopen the application code in Arduino IDE, etc. to recompile from scratch.
-
-To re-use the **new h-only** way, just 
-
-1. **Delete the all the files in src directory.**
-2. **Copy the files in src_h directory into src.**
-3. Close then reopen the application code in Arduino IDE, etc. to recompile from scratch.
+```
+// To be included only in main(), .ino with setup() to avoid `Multiple Definitions` Linker Error
+#include <STM32_ISR_Timer.h>                //https://github.com/khoih-prog/STM32_TimerInterrupt
+```
 
 ---
 ---
@@ -601,12 +561,14 @@ void setup()
 // Don't define _TIMERINTERRUPT_LOGLEVEL_ > 0. Only for special ISR debugging only. Can hang the system.
 // Don't define TIMER_INTERRUPT_DEBUG > 2. Only for special ISR debugging only. Can hang the system.
 #define TIMER_INTERRUPT_DEBUG         0
-#define _TIMERINTERRUPT_LOGLEVEL_     0
+#define _TIMERINTERRUPT_LOGLEVEL_     3
 
 #include "STM32TimerInterrupt.h"
+
+// To be included only in main(), .ino with setup() to avoid `Multiple Definitions` Linker Error
 #include "STM32_ISR_Timer.h"
 
-#include <SimpleTimer.h>              // https://github.com/schinken/SimpleTimer
+#include <SimpleTimer.h>              // https://github.com/jfturcot/SimpleTimer
 
 #ifndef LED_BUILTIN
 #define LED_BUILTIN       13
@@ -935,10 +897,10 @@ While software timer, **programmed for 2s, is activated after 9.782s !!!**. Then
 
 ```
 Starting ISR_Timer_Complex on NUCLEO_F767ZI
-STM32_TimerInterrupt v1.2.0
+STM32_TimerInterrupt v1.3.0
 CPU Frequency = 216 MHz
-[TISR] STM32TimerInterrupt: Timer Input Freq (Hz) = 216000000
-[TISR] Frequency = 1000000.00 , _count = 50000
+[TISR] Timer Input Freq (Hz) = 216000000 , Timer Clock Frequency = 1000000.00
+[TISR] Timer Frequency = 10000.00 , _count = 100
 Starting  ITimer OK, millis() = 6
 [9] MAC:FE-E1-88-EC-DD-95
 2s: Delta ms = 2000
@@ -995,15 +957,14 @@ blynkDoingSomething2s: Delta programmed ms = 2000, actual = 3000
 The following is the sample terminal output when running example [**TimerInterruptTest**](examples/TimerInterruptTest) on **STM32F7 Nucleo-144 NUCLEO_F767ZI** to demonstrate how to start/stop Hardware Timers.
 
 ```
-
 Starting TimerInterruptTest on NUCLEO_F767ZI
-STM32_TimerInterrupt v1.2.0
+STM32_TimerInterrupt v1.3.0
 CPU Frequency = 216 MHz
-[TISR] STM32TimerInterrupt: Timer Input Freq (Hz) = 216000000
-[TISR] Frequency = 1000000.00 , _count = 1000000
-Starting  ITimer0 OK, millis() = 108
-[TISR] STM32TimerInterrupt: Timer Input Freq (Hz) = 108000000
-[TISR] Frequency = 1000000.00 , _count = 3000000
+[TISR] Timer Input Freq (Hz) = 216000000 , Timer Clock Frequency = 1000000.00
+[TISR] Timer Frequency = 1.00 , _count = 1000000
+Starting ITimer0 OK, millis() = 108
+[TISR] Timer Input Freq (Hz) = 108000000 , Timer Clock Frequency = 1000000.00
+[TISR] Timer Frequency = 0.33 , _count = 3000000
 Starting  ITimer1 OK, millis() = 119
 Stop ITimer0, millis() = 5001
 Start ITimer0, millis() = 10002
@@ -1053,16 +1014,16 @@ The following is the sample terminal output when running example [**Argument_Non
 
 ```
 Starting Argument_None on NUCLEO_F767ZI
-STM32_TimerInterrupt v1.2.0
+STM32TimerInterrupt v1.3.0
 CPU Frequency = 216 MHz
-[TISR] STM32TimerInterrupt: Timer Input Freq (Hz) = 216000000
-[TISR] Frequency = 1000000.00 , _count = 1000000
-Starting  ITimer0 OK, millis() = 106
-[TISR] STM32TimerInterrupt: Timer Input Freq (Hz) = 108000000
-[TISR] Frequency = 1000000.00 , _count = 5000000
+[TISR] Timer Input Freq (Hz) = 216000000 , Timer Clock Frequency = 1000000.00
+[TISR] Timer Frequency = 1.00 , _count = 1000000
+Starting ITimer0 OK, millis() = 106
+[TISR] Timer Input Freq (Hz) = 108000000 , Timer Clock Frequency = 1000000.00
+[TISR] Timer Frequency = 0.50 , _count = 2000000
 Starting  ITimer1 OK, millis() = 117
-[TISR] STM32TimerInterrupt: Timer Input Freq (Hz) = 108000000
-[TISR] Frequency = 1000000.00 , _count = 20000000
+[TISR] Timer Input Freq (Hz) = 108000000 , Timer Clock Frequency = 1000000.00
+[TISR] Timer Frequency = 0.20 , _count = 5000000
 Starting  ITimer2 OK, millis() = 129
 ITimer0: millis() = 1106, delta = 1000
 ITimer0: millis() = 2106, delta = 1000
@@ -1120,14 +1081,14 @@ The following is the sample terminal output when running example [Change_Interva
 
 ```
 Starting Change_Interval on NUCLEO_F767ZI
-STM32_TimerInterrupt v1.2.0
+STM32TimerInterrupt v1.3.0
 CPU Frequency = 216 MHz
-[TISR] STM32TimerInterrupt: Timer Input Freq (Hz) = 216000000
-[TISR] Frequency = 1000000.00 , _count = 500000
-Starting  ITimer0 OK, millis() = 111
-[TISR] STM32TimerInterrupt: Timer Input Freq (Hz) = 216000000
-[TISR] Frequency = 1000000.00 , _count = 1000000
-Starting  ITimer1 OK, millis() = 122
+[TISR] Timer Input Freq (Hz) = 216000000 , Timer Clock Frequency = 1000000.00
+[TISR] Timer Frequency = 2.00 , _count = 500000
+Starting  Timer0 OK, millis() = 111
+[TISR] Timer Input Freq (Hz) = 108000000 , Timer Clock Frequency = 1000000.00
+[TISR] Timer Frequency = 1.00 , _count = 1000000
+Starting ITimer1 OK, millis() = 122
 Time = 10001, Timer0Count = 20, , Timer1Count = 10
 Time = 20002, Timer0Count = 40, , Timer1Count = 20
 [TISR] STM32TimerInterrupt: Timer Input Freq (Hz) = 216000000
@@ -1151,11 +1112,11 @@ In this example, 16 independent ISR Timers are used, yet utilized just one Hardw
 
 ```
 Starting ISR_16_Timers_Array_Complex on NUCLEO_F767ZI
-STM32_TimerInterrupt v1.2.0
+STM32_TimerInterrupt v1.3.0
 CPU Frequency = 216 MHz
-[TISR] STM32TimerInterrupt: Timer Input Freq (Hz) = 216000000
-[TISR] Frequency = 1000000.00 , _count = 10000
-Starting  ITimer OK, millis() = 12
+[TISR] Timer Input Freq (Hz) = 216000000 , Timer Clock Frequency = 1000000.00
+[TISR] Timer Frequency = 100.00 , _count = 10000
+Starting ITimer OK, millis() = 12
 SimpleTimer : 2s, ms = 10015, Dms : 10003
 Timer : 0, programmed : 5000, actual : 5010
 Timer : 1, programmed : 10000, actual : 0
@@ -1323,7 +1284,7 @@ In this example, 16 independent ISR Timers are used, yet utilized just one Hardw
 
 ```
 Starting ISR_16_Timers_Array_Complex on BLUEPILL_F103C8
-STM32TimerInterrupt v1.2.1
+STM32_TimerInterrupt v1.3.0
 CPU Frequency = 72 MHz
 Starting ITimer OK, millis() = 8880
 SimpleTimer : 2, ms : 18880, Dms : 10000
@@ -1476,7 +1437,7 @@ In this example, 16 independent ISR Timers are used, yet utilized just one Hardw
 
 ```
 Starting ISR_16_Timers_Array_Complex on NUCLEO_H743ZI2
-STM32TimerInterrupt v1.2.1
+STM32_TimerInterrupt v1.3.0
 CPU Frequency = 480 MHz
 Starting ITimer OK, millis() = 109
 SimpleTimer : 2, ms : 10112, Dms : 10003
@@ -1629,7 +1590,7 @@ In this example, 16 independent ISR Timers are used, yet utilized just one Hardw
 
 ```
 Starting ISR_16_Timers_Array_Complex on NUCLEO_L552ZE_Q
-STM32TimerInterrupt v1.2.1
+STM32_TimerInterrupt v1.3.0
 CPU Frequency = 110 MHz
 Starting ITimer OK, millis() = 109
 SimpleTimer : 2, ms : 10112, Dms : 10003
@@ -1798,65 +1759,11 @@ Sometimes, the library will only work if you update the board core to the latest
 ---
 ---
 
-## Releases
-
-### Releases v1.2.1
-
-1. Add support to **STM32L5 (NUCLEO_L552ZE_Q)**
-2. Verify OK with **STM32H7 (NUCLEO_H743ZI2)**
-
-### Releases v1.2.0
-
-1. Add better debug feature.
-2. Optimize code and examples to reduce RAM usage
-3. Add Table of Contents
-
-### Releases v1.1.1
-
-1. Add example [**Change_Interval**](examples/Change_Interval) and [**ISR_16_Timers_Array_Complex**](examples/ISR_16_Timers_Array_Complex)
-2. Bump up version to sync with other TimerInterrupt Libraries. Modify Version String.
-
-
-### Releases v1.0.1
-
-1. Add complicated example [ISR_16_Timers_Array](examples/ISR_16_Timers_Array) utilizing and demonstrating the full usage of 16 independent ISR Timers.
-
-### Releases v1.0.0
-
-1. Permit up to 16 super-long-time, super-accurate ISR-based timers to avoid being blocked
-2. Using cpp code besides Impl.h code to use if Multiple-Definition linker error.
-
-#### Supported Boards
-
-1. **STM32 boards with built-in Ethernet LAN8742A** such as :
-
-  - **Nucleo-144 (F429ZI, F767ZI, NUCLEO_H743ZI2, NUCLEO_L552ZE_Q)**
-  - **Discovery (STM32F746G-DISCOVERY)**
-  - **All STM32 boards (STM32F/L/H/G/WB/MP1) with 32K+ Flash, with Built-in Ethernet**
-  
-2. **STM32F/L/H/G/WB/MP1 boards (with 32+K Flash) running W5x00 or ENC28J60 shields)**
-
-- Nucleo-144
-- Nucleo-64
-- Discovery
-- Generic STM32F0, STM32F1, STM32F2, STM32F3, STM32F4, STM32F7 (with 64+K Flash): x8 and up
-- STM32L0, STM32L1, STM32L4, STM32L5
-- STM32G0, STM32G4
-- STM32H7
-- STM32WB
-- STM32MP1
-- LoRa boards
-- 3-D printer boards
-- Generic Flight Controllers
-- Midatronics boards
-
----
----
-
 ### Issues
 
 Submit issues to: [STM32_TimerInterrupt issues](https://github.com/khoih-prog/STM32_TimerInterrupt/issues)
 
+---
 ---
 
 ## TO DO
@@ -1874,6 +1781,7 @@ Submit issues to: [STM32_TimerInterrupt issues](https://github.com/khoih-prog/ST
 4. Similar features for remaining Arduino boards such as ESP32, ESP8266, SAMD21, SAMD51, nRF52, mbed-nRF52, Teensy, etc.
 5. Add Table of Contents
 6. Add support to **STM32L5 (NUCLEO_L552ZE_Q)**
+7. Fix `multiple-definitions` linker error. Drop `src_cpp` and `src_h` directories
 
 ---
 ---
