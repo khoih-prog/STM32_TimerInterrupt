@@ -49,6 +49,7 @@ extern "C" {
 #define HAL_DMA_MODULE_ENABLED
 #define HAL_DMA2D_MODULE_ENABLED
 #define HAL_ETH_MODULE_ENABLED
+/*#define HAL_ETH_LEGACY_MODULE_ENABLED*/
 #define HAL_FLASH_MODULE_ENABLED
 #define HAL_NAND_MODULE_ENABLED
 #define HAL_NOR_MODULE_ENABLED
@@ -82,6 +83,7 @@ extern "C" {
 #define HAL_PCD_MODULE_ENABLED
 #define HAL_HCD_MODULE_ENABLED
 #define HAL_FMPI2C_MODULE_ENABLED
+#define HAL_FMPSMBUS_MODULE_ENABLED
 #define HAL_SPDIFRX_MODULE_ENABLED
 #define HAL_DFSDM_MODULE_ENABLED
 #define HAL_LPTIM_MODULE_ENABLED
@@ -139,8 +141,8 @@ in voltage and temperature. */
 #define EXTERNAL_CLOCK_VALUE     12288000U /*!< Value of the External oscillator in Hz*/
 #endif /* EXTERNAL_CLOCK_VALUE */
 
-/*  Tip: To avoid modifying this file each time you need to use different HSE,
-    ===  you can define the HSE value in your toolchain compiler preprocessor. */
+/* Tip: To avoid modifying this file each time you need to use different HSE,
+   ===  you can define the HSE value in your toolchain compiler preprocessor. */
 
 /* ########################### System Configuration ######################### */
 /**
@@ -179,6 +181,7 @@ in voltage and temperature. */
 #define  USE_HAL_HCD_REGISTER_CALLBACKS         0U /* HCD register callback disabled       */
 #define  USE_HAL_I2C_REGISTER_CALLBACKS         0U /* I2C register callback disabled       */
 #define  USE_HAL_FMPI2C_REGISTER_CALLBACKS      0U /* FMPI2C register callback disabled    */
+#define  USE_HAL_FMPSMBUS_REGISTER_CALLBACKS    0U /* FMPSMBUS register callback disabled  */
 #define  USE_HAL_I2S_REGISTER_CALLBACKS         0U /* I2S register callback disabled       */
 #define  USE_HAL_IRDA_REGISTER_CALLBACKS        0U /* IRDA register callback disabled      */
 #define  USE_HAL_LPTIM_REGISTER_CALLBACKS       0U /* LPTIM register callback disabled     */
@@ -235,7 +238,7 @@ in voltage and temperature. */
 //#define LAN8742A_PHY_ADDRESS            0x00U
 /* Section 2: PHY configuration section */
 #if !defined  (LAN8742A_PHY_ADDRESS)
-/* LAN8742A PHY Address*/
+/* KH, LAN8742A PHY Address*/
 #define LAN8742A_PHY_ADDRESS            0x00U
 #endif
 ////////////////////////////////
@@ -281,9 +284,9 @@ in voltage and temperature. */
 
 /* ################## SPI peripheral configuration ########################## */
 
-/*  CRC FEATURE: Use to activate CRC feature inside HAL SPI Driver
-    Activated: CRC code is present inside driver
-    Deactivated: CRC code cleaned from driver
+/* CRC FEATURE: Use to activate CRC feature inside HAL SPI Driver
+  Activated: CRC code is present inside driver
+  Deactivated: CRC code cleaned from driver
 */
 #if !defined (USE_SPI_CRC)
 #define USE_SPI_CRC                     0U
@@ -349,6 +352,10 @@ in voltage and temperature. */
 #ifdef HAL_ETH_MODULE_ENABLED
 #include "stm32f4xx_hal_eth.h"
 #endif /* HAL_ETH_MODULE_ENABLED */
+
+#ifdef HAL_ETH_LEGACY_MODULE_ENABLED
+#include "Legacy/stm32f4xx_hal_eth_legacy.h"
+#endif /* HAL_ETH_LEGACY_MODULE_ENABLED */
 
 #ifdef HAL_FLASH_MODULE_ENABLED
 #include "stm32f4xx_hal_flash.h"
@@ -469,6 +476,10 @@ in voltage and temperature. */
 #ifdef HAL_FMPI2C_MODULE_ENABLED
 #include "stm32f4xx_hal_fmpi2c.h"
 #endif /* HAL_FMPI2C_MODULE_ENABLED */
+
+#ifdef HAL_FMPSMBUS_MODULE_ENABLED
+#include "stm32f4xx_hal_fmpsmbus.h"
+#endif /* HAL_FMPSMBUS_MODULE_ENABLED */
 
 #ifdef HAL_SPDIFRX_MODULE_ENABLED
 #include "stm32f4xx_hal_spdifrx.h"

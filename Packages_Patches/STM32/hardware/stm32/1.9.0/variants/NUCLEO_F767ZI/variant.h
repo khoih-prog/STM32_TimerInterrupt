@@ -1,19 +1,19 @@
 /*
-  Copyright (c) 2011 Arduino.  All right reserved.
+    Copyright (c) 2011 Arduino.  All right reserved.
 
-  This library is free software; you can redistribute it and/or
-  modify it under the terms of the GNU Lesser General Public
-  License as published by the Free Software Foundation; either
-  version 2.1 of the License, or (at your option) any later version.
+    This library is free software; you can redistribute it and/or
+    modify it under the terms of the GNU Lesser General Public
+    License as published by the Free Software Foundation; either
+    version 2.1 of the License, or (at your option) any later version.
 
-  This library is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
-  See the GNU Lesser General Public License for more details.
+    This library is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+    See the GNU Lesser General Public License for more details.
 
-  You should have received a copy of the GNU Lesser General Public
-  License along with this library; if not, write to the Free Software
-  Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+    You should have received a copy of the GNU Lesser General Public
+    License along with this library; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
 #ifndef _VARIANT_ARDUINO_STM32_
@@ -23,9 +23,9 @@
 extern "C" {
 #endif // __cplusplus
 
-/*----------------------------------------------------------------------------
- *        Pins
- *----------------------------------------------------------------------------*/
+/*  ----------------------------------------------------------------------------
+          Pins
+    ----------------------------------------------------------------------------*/
 
 #define PG9  0
 #define PG14 1
@@ -155,9 +155,9 @@ extern "C" {
 #ifdef __cplusplus
 } // extern "C"
 #endif
-/*----------------------------------------------------------------------------
- *        Arduino objects - C++ only
- *----------------------------------------------------------------------------*/
+/*  ----------------------------------------------------------------------------
+          Arduino objects - C++ only
+    ----------------------------------------------------------------------------*/
 
 #ifdef __cplusplus
   // These serial port names are intended to allow libraries and architecture-neutral
@@ -176,7 +176,7 @@ extern "C" {
   // SERIAL_PORT_HARDWARE_OPEN  Hardware serial ports which are open for use.  Their RX & TX
   //                            pins are NOT connected to anything by default.
   #define SERIAL_PORT_MONITOR     Serial
-  
+
   // KH mod to add Serial1, for ESP-AT
   //#define SERIAL_PORT_HARDWARE    Serial
   #define SERIAL_PORT_HARDWARE    Serial1
